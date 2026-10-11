@@ -4,17 +4,19 @@ A JSON Lines format for consumer credit data reporting.
 
 MIT licence — see [LICENSE](LICENSE) for details.
 
-## Schemas
-
-| File | Description |
-| --- | --- |
-| [schemas/sirf.schema.json](schemas/sirf.schema.json) | JSON Schema (draft 2020-12) for all SIRF records (header and account) |
-
 ## Documentation
 
 | File | Description |
 | --- | --- |
 | [sirf-schema.md](sirf-schema.md) | Format reference — field tables, enum values, conventions |
+| [sirf-delivery.md](sirf-delivery.md) | Delivering SIRF data — JSON Lines files for bulk reporting, single records over HTTP POST for real-time reporting and corrections |
+| [sirf-validation.md](sirf-validation.md) | Validating SIRF files with JSON Schema — what is checked, error examples, Python validator |
+
+## Schemas
+
+| File | Description |
+| --- | --- |
+| [schemas/sirf.schema.json](schemas/sirf.schema.json) | JSON Schema (draft 2020-12) for all SIRF records (header and account) |
 
 ## Samples
 

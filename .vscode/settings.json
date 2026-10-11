@@ -1,0 +1,8 @@
+{
+    "[markdown]": {
+        "editor.wordWrap": "off"
+    },
+    "[jsonl]": {
+        "editor.wordWrap": "off"
+    }
+}

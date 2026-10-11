@@ -32,15 +32,31 @@ The first record in every SIRF file. Validated against `schemas/sirf.schema.json
 
 ## Account Record
 
-Validated against `schemas/sirf.schema.json` (`$defs/account`).
+Validated against `schemas/sirf.schema.json` (`$defs/accountRecord`).
 
-### Core Fields
+Each account record groups three objects: the individual (`person`), their address (`address`), and the account data (`account`).
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `recordType` | const `"Account"` | Yes | Discriminator. Always `"Account"`. |
 | `person` | object | Yes | The individual associated with the account. See [Person](#person). |
 | `address` | object | Yes | UK residential address. See [Address](#address). |
+| `account` | object | Yes | The account data. See [Account](#account). |
+
+```text
+{ "recordType": "Account", "person": { … }, "address": { … }, "account": { … } }
+```
+
+---
+
+## Account
+
+The `account` object holds all account data. Validated against `schemas/sirf.schema.json` (`$defs/account`).
+
+### Core Fields
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
 | `accountId` | string | Yes | Account identifier within the lender's system. Pattern: `^[A-Za-z0-9-]+$`. |
 | `accountType` | string (enum) | Yes | Credit product category. See [Account Types](#account-types). |
 | `status` | string (enum) | Yes | Monthly payment performance indicator. See [Status Values](#status-values). |
@@ -53,12 +69,12 @@ Validated against `schemas/sirf.schema.json` (`$defs/account`).
 
 | Field | Type | On CreditCard | On ChargeCard / Budget | On all other types |
 | --- | --- | --- | --- | --- |
-| `creditLimit` | number | Required | Required | Prohibited |
-| `minimumPayment` | number | Required | Optional | Prohibited |
-| `cashAdvances` | number | Optional | Optional | Prohibited |
+| `creditLimit` | integer | Required | Required | Prohibited |
+| `minimumPayment` | integer | Required | Optional | Prohibited |
+| `cashAdvances` | integer | Optional | Optional | Prohibited |
 | `cashAdvancesCount` | integer | Optional | Optional | Prohibited |
 
-`creditLimit`, `minimumPayment`, and `cashAdvances` are monetary amounts in GBP. Minimum: 0. `cashAdvancesCount` is a non-negative integer.
+`creditLimit`, `minimumPayment`, and `cashAdvances` are monetary amounts in whole GBP pounds. Minimum: 0. `cashAdvancesCount` is a non-negative integer.
 
 #### Delinquency Field
 
@@ -73,14 +89,15 @@ Validated against `schemas/sirf.schema.json` (`$defs/account`).
 | Field | Type | Description |
 | --- | --- | --- |
 | `startDate` | string (date) | Date the account was opened. Format: `YYYY-MM-DD`. |
-| `repayment` | number | Scheduled repayment amount per period in GBP. Minimum: 0. |
+| `repayment` | integer | Scheduled repayment amount per period in GBP. Minimum: 0. |
 | `repaymentPeriod` | integer | Total repayment periods at origination. Minimum: 1. |
-| `currentBalance` | number | Outstanding balance in GBP at the point of reporting. Minimum: 0. |
+| `currentBalance` | integer | Outstanding balance in GBP at the point of reporting. Minimum: 0. |
 | `paymentFrequency` | string (enum) | How often scheduled repayments are made. See [Payment Frequencies](#payment-frequencies). |
+| `portfolioId` | string | Portfolio the account belongs to. Used only when the record is sent on its own by HTTP POST; omit in JSON Lines files, where the header's `portfolioId` applies. Pattern: `^[a-z0-9-]+$`. See [Delivery](sirf-delivery.md). |
 | `accountIdChange` | string | Updated account identifier, provided when the `accountId` for this account has changed. Processors should replace the previous `accountId` with this value. Pattern: `^[A-Za-z0-9-]+$`. |
 | `accountSubtype` | string (enum) | Further classification within the account type. Values: `Residential`, `BuyToLet`, `Flexible`. |
 | `closeDate` | string (date) | Date the account was closed. Format: `YYYY-MM-DD`. Omit if the account is still open. |
-| `startBalance` | number | Balance in GBP at the time the account was opened. Minimum: 0. |
+| `startBalance` | integer | Balance in GBP at the time the account was opened. Minimum: 0. |
 | `flags` | array of string (enum) | Special condition markers. Multiple flags may be applied simultaneously. Omit the field entirely if none apply. See [Flags](#flags). |
 
 ---
@@ -91,6 +108,7 @@ Validated against `schemas/sirf.schema.json` (`$defs/account`).
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
+| `customerId` | string | No | The lender's own identifier for the customer, the same across all of that customer's accounts with the lender. Pattern: `^[A-Za-z0-9-]+$`. |
 | `title` | string (enum) | No | Honorific. Values: `Mr`, `Mrs`, `Ms`, `Miss`, `Mx`, `Dr`. |
 | `firstName` | string | Yes | Given name. Minimum 2 characters. |
 | `middleName` | string | No | Middle name or names. |
@@ -189,12 +207,12 @@ All dates are strings in `YYYY-MM-DD` format with zero-padded months and days. N
 
 ### Monetary Amounts
 
-Monetary amounts are JSON numbers in GBP. Currency is always GBP — no currency field is needed. Values should have at most 2 decimal places.
+Monetary amounts are JSON integers in whole GBP pounds, rounded to the nearest pound (e.g. £498.75 is reported as `499`). Decimal values are invalid. Currency is always GBP — no currency field is needed.
 
 ### Identifiers
 
-- **`accountId`** — alphanumeric characters and hyphens, mixed case. Pattern: `^[A-Za-z0-9-]+$`.
-- **`portfolioId`** — lowercase kebab-case, prefixed with the reporting institution's slug. Pattern: `^[a-z0-9-]+$`. Example: `farringdon-mortgages`.
+- **`accountId`** and **`customerId`** — alphanumeric characters and hyphens, mixed case. Pattern: `^[A-Za-z0-9-]+$`.
+- **`portfolioId`** (in the Header, and in `account` for records sent by HTTP POST) — lowercase kebab-case, prefixed with the reporting institution's slug. Pattern: `^[a-z0-9-]+$`. Example: `farringdon-mortgages`.
 
 ### Postcodes
 
@@ -204,12 +222,56 @@ UK postcodes must include the internal space. `NG8 1JD` is valid; `NG81JD` is no
 
 ## Examples
 
+### Header
+
+The first line of every SIRF file, shown pretty-printed. In a file it appears on a single line.
+
+```json
+{
+  "recordType": "Header",
+  "sirfVersion": "2.0",
+  "reportingStartDate": "2025-02-01",
+  "reportingEndDate": "2025-02-28",
+  "portfolioId": "farringdon-mortgages",
+  "recordCount": 5
+}
+```
+
 ### Sample 1 — Mortgage (Residential, with close date)
 
 A residential mortgage with `accountSubtype` and `closeDate` set.
 
 ```json
-{"recordType":"Account","person":{"title":"Mrs","firstName":"Patricia","lastName":"Okafor","dob":"1968-07-30"},"address":{"buildingName":"Rose Cottage","buildingNumber":"8","line1":"Church Lane","line2":"Clifton","city":"Bristol","postalCode":"BS8 4CD"},"accountId":"POK-7714","accountType":"Mortgage","accountSubtype":"Residential","status":"UpToDate","startDate":"2018-03-01","closeDate":"2025-03-01","repayment":498.75,"repaymentPeriod":300,"currentBalance":87450.00,"paymentFrequency":"Monthly"}
+{
+  "recordType": "Account",
+  "person": {
+    "customerId": "FAR-C10482",
+    "title": "Mrs",
+    "firstName": "Patricia",
+    "lastName": "Okafor",
+    "dob": "1968-07-30"
+  },
+  "address": {
+    "buildingName": "Rose Cottage",
+    "buildingNumber": "8",
+    "line1": "Church Lane",
+    "line2": "Clifton",
+    "city": "Bristol",
+    "postalCode": "BS8 4CD"
+  },
+  "account": {
+    "accountId": "POK-7714",
+    "accountType": "Mortgage",
+    "accountSubtype": "Residential",
+    "status": "UpToDate",
+    "startDate": "2018-03-01",
+    "closeDate": "2025-03-01",
+    "repayment": 499,
+    "repaymentPeriod": 300,
+    "currentBalance": 87450,
+    "paymentFrequency": "Monthly"
+  }
+}
 ```
 
 ### Sample 2 — Credit Card (with minimum payment and cash advances)
@@ -217,7 +279,38 @@ A residential mortgage with `accountSubtype` and `closeDate` set.
 A `CreditCard` account showing `creditLimit`, `minimumPayment`, `cashAdvances`, and `cashAdvancesCount`.
 
 ```json
-{"recordType":"Account","person":{"title":"Mr","firstName":"Marcus","lastName":"Bell","dob":"1983-12-07","email":"m.bell@example.co.uk","phone":"447911234567"},"address":{"buildingNumber":"9","line1":"Fernside Close","city":"Norwich","postalCode":"NR3 2HT"},"accountId":"MBL-7722","accountType":"CreditCard","status":"UpToDate","startDate":"2020-11-01","repayment":150.00,"repaymentPeriod":60,"currentBalance":2340.00,"paymentFrequency":"Monthly","creditLimit":7500.00,"minimumPayment":46.80,"cashAdvances":300.00,"cashAdvancesCount":1}
+{
+  "recordType": "Account",
+  "person": {
+    "customerId": "FAR-C55213",
+    "title": "Mr",
+    "firstName": "Marcus",
+    "lastName": "Bell",
+    "dob": "1983-12-07",
+    "email": "m.bell@example.co.uk",
+    "phone": "447911234567"
+  },
+  "address": {
+    "buildingNumber": "9",
+    "line1": "Fernside Close",
+    "city": "Norwich",
+    "postalCode": "NR3 2HT"
+  },
+  "account": {
+    "accountId": "MBL-7722",
+    "accountType": "CreditCard",
+    "status": "UpToDate",
+    "startDate": "2020-11-01",
+    "repayment": 150,
+    "repaymentPeriod": 60,
+    "currentBalance": 2340,
+    "paymentFrequency": "Monthly",
+    "creditLimit": 7500,
+    "minimumPayment": 47,
+    "cashAdvances": 300,
+    "cashAdvancesCount": 1
+  }
+}
 ```
 
 ### Sample 3 — Unsecured Loan with delinquency fields and flags
@@ -225,7 +318,37 @@ A `CreditCard` account showing `creditLimit`, `minimumPayment`, `cashAdvances`, 
 An `UnsecuredLoan` in arrears with `daysPastDue`, `startBalance`, and an `Arrangement` flag.
 
 ```json
-{"recordType":"Account","person":{"title":"Ms","firstName":"Sarah","middleName":"Louise","lastName":"Mitchell","dob":"1985-03-22"},"address":{"buildingNumber":"14","line1":"Birchwood Avenue","line2":"Headingley","city":"Leeds","postalCode":"LS6 2AB"},"accountId":"SML-4821","accountType":"UnsecuredLoan","status":"Delinquent2","startDate":"2023-06-01","daysPastDue":62,"repayment":185.00,"repaymentPeriod":36,"startBalance":6660.00,"currentBalance":3420.50,"paymentFrequency":"Monthly","flags":["Arrangement"]}
+{
+  "recordType": "Account",
+  "person": {
+    "customerId": "FAR-C31057",
+    "title": "Ms",
+    "firstName": "Sarah",
+    "middleName": "Louise",
+    "lastName": "Mitchell",
+    "dob": "1985-03-22"
+  },
+  "address": {
+    "buildingNumber": "14",
+    "line1": "Birchwood Avenue",
+    "line2": "Headingley",
+    "city": "Leeds",
+    "postalCode": "LS6 2AB"
+  },
+  "account": {
+    "accountId": "SML-4821",
+    "accountType": "UnsecuredLoan",
+    "status": "Delinquent2",
+    "startDate": "2023-06-01",
+    "daysPastDue": 62,
+    "repayment": 185,
+    "repaymentPeriod": 36,
+    "startBalance": 6660,
+    "currentBalance": 3421,
+    "paymentFrequency": "Monthly",
+    "flags": ["Arrangement"]
+  }
+}
 ```
 
 ### Batch File
@@ -234,9 +357,9 @@ A complete SIRF JSON Lines file — 1 header and 5 account records:
 
 ```json
 {"recordType":"Header","sirfVersion":"2.0","reportingStartDate":"2025-02-01","reportingEndDate":"2025-02-28","portfolioId":"farringdon-mortgages","recordCount":5}
-{"recordType":"Account","person":{"title":"Mrs","firstName":"Patricia","lastName":"Okafor","dob":"1968-07-30"},"address":{"buildingName":"Rose Cottage","buildingNumber":"8","line1":"Church Lane","line2":"Clifton","city":"Bristol","postalCode":"BS8 4CD"},"accountId":"POK-7714","accountType":"Mortgage","accountSubtype":"Residential","status":"UpToDate","startDate":"2018-03-01","closeDate":"2025-03-01","repayment":498.75,"repaymentPeriod":300,"currentBalance":87450.00,"paymentFrequency":"Monthly"}
-{"recordType":"Account","person":{"title":"Mr","firstName":"James","lastName":"Thornton","dob":"1979-11-14","email":"j.thornton@example.com","phone":"447700900142"},"address":{"buildingNumber":"42","line1":"Maple Street","city":"Manchester","postalCode":"M1 4BT"},"accountId":"JTH-2293","accountType":"CreditCard","status":"UpToDate","startDate":"2021-09-15","repayment":75.00,"repaymentPeriod":60,"currentBalance":1240.00,"paymentFrequency":"Monthly","creditLimit":5000.00,"minimumPayment":24.80,"cashAdvances":200.00,"cashAdvancesCount":2}
-{"recordType":"Account","person":{"title":"Ms","firstName":"Sarah","middleName":"Louise","lastName":"Mitchell","dob":"1985-03-22"},"address":{"buildingNumber":"14","line1":"Birchwood Avenue","line2":"Headingley","city":"Leeds","postalCode":"LS6 2AB"},"accountId":"SML-4821","accountType":"UnsecuredLoan","status":"Delinquent2","startDate":"2023-06-01","daysPastDue":62,"repayment":185.00,"repaymentPeriod":36,"startBalance":6660.00,"currentBalance":3420.50,"paymentFrequency":"Monthly","flags":["Arrangement"]}
-{"recordType":"Account","person":{"title":"Mr","firstName":"David","lastName":"Nkosi","dob":"1995-06-12"},"address":{"buildingNumber":"31","line1":"Wellington Street","city":"Sheffield","postalCode":"S1 4ER"},"accountId":"DNK-8856","accountType":"HirePurchase","status":"UpToDate","startDate":"2022-09-01","repayment":320.00,"repaymentPeriod":60,"currentBalance":12800.00,"paymentFrequency":"Monthly"}
-{"recordType":"Account","person":{"title":"Ms","firstName":"Eleanor","lastName":"Griffiths","dob":"1961-03-28"},"address":{"buildingName":"Willowbank House","buildingNumber":"5","line1":"Riverside Way","city":"Exeter","postalCode":"EX2 4AB"},"accountId":"EGR-1147","accountType":"Mortgage","accountSubtype":"BuyToLet","status":"Defaulted","startDate":"2015-06-01","closeDate":"2024-11-30","repayment":612.00,"repaymentPeriod":240,"currentBalance":0.00,"paymentFrequency":"Monthly","flags":["Partial"]}
+{"recordType":"Account","person":{"customerId":"FAR-C10482","title":"Mrs","firstName":"Patricia","lastName":"Okafor","dob":"1968-07-30"},"address":{"buildingName":"Rose Cottage","buildingNumber":"8","line1":"Church Lane","line2":"Clifton","city":"Bristol","postalCode":"BS8 4CD"},"account":{"accountId":"POK-7714","accountType":"Mortgage","accountSubtype":"Residential","status":"UpToDate","startDate":"2018-03-01","closeDate":"2025-03-01","repayment":499,"repaymentPeriod":300,"currentBalance":87450,"paymentFrequency":"Monthly"}}
+{"recordType":"Account","person":{"customerId":"FAR-C20931","title":"Mr","firstName":"James","lastName":"Thornton","dob":"1979-11-14","email":"j.thornton@example.com","phone":"447700900142"},"address":{"buildingNumber":"42","line1":"Maple Street","city":"Manchester","postalCode":"M1 4BT"},"account":{"accountId":"JTH-2293","accountType":"CreditCard","status":"UpToDate","startDate":"2021-09-15","repayment":75,"repaymentPeriod":60,"currentBalance":1240,"paymentFrequency":"Monthly","creditLimit":5000,"minimumPayment":25,"cashAdvances":200,"cashAdvancesCount":2}}
+{"recordType":"Account","person":{"customerId":"FAR-C31057","title":"Ms","firstName":"Sarah","middleName":"Louise","lastName":"Mitchell","dob":"1985-03-22"},"address":{"buildingNumber":"14","line1":"Birchwood Avenue","line2":"Headingley","city":"Leeds","postalCode":"LS6 2AB"},"account":{"accountId":"SML-4821","accountType":"UnsecuredLoan","status":"Delinquent2","startDate":"2023-06-01","daysPastDue":62,"repayment":185,"repaymentPeriod":36,"startBalance":6660,"currentBalance":3421,"paymentFrequency":"Monthly","flags":["Arrangement"]}}
+{"recordType":"Account","person":{"title":"Mr","firstName":"David","lastName":"Nkosi","dob":"1995-06-12"},"address":{"buildingNumber":"31","line1":"Wellington Street","city":"Sheffield","postalCode":"S1 4ER"},"account":{"accountId":"DNK-8856","accountType":"HirePurchase","status":"UpToDate","startDate":"2022-09-01","repayment":320,"repaymentPeriod":60,"currentBalance":12800,"paymentFrequency":"Monthly"}}
+{"recordType":"Account","person":{"customerId":"FAR-C48820","title":"Ms","firstName":"Eleanor","lastName":"Griffiths","dob":"1961-03-28"},"address":{"buildingName":"Willowbank House","buildingNumber":"5","line1":"Riverside Way","city":"Exeter","postalCode":"EX2 4AB"},"account":{"accountId":"EGR-1147","accountType":"Mortgage","accountSubtype":"BuyToLet","status":"Defaulted","startDate":"2015-06-01","closeDate":"2024-11-30","repayment":612,"repaymentPeriod":240,"currentBalance":0,"paymentFrequency":"Monthly","flags":["Partial"]}}
 ```

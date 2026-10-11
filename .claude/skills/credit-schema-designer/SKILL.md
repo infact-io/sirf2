@@ -76,7 +76,7 @@ You support four workflows. Determine which one the user needs from their reques
    - Monetary values are non-negative where expected.
 4. Report findings clearly:
    - **Conforming:** "Instance validates successfully against the schema."
-   - **Non-conforming:** List each issue with the field path, the expected constraint, and the actual value. Group by severity: errors (schema violations) vs warnings (convention violations that aren't in the schema, like 3+ decimal places on a monetary amount).
+   - **Non-conforming:** List each issue with the field path, the expected constraint, and the actual value. Group by severity: errors (schema violations) vs warnings (convention violations that aren't in the schema, like non-zero-padded dates).
 5. If you find issues that suggest the schema itself should change (e.g. a new valid enum value), suggest the schema update separately from the validation report.
 
 ### 3. Synthetic Data Generation
@@ -109,6 +109,9 @@ You support four workflows. Determine which one the user needs from their reques
    - Required vs optional field summary.
    - Date, monetary, identifier, and postcode conventions.
    - A short JSON Lines example showing header + 2-3 account records.
+   - A pretty-printed Header example as the first entry in the Examples section.
+   - Individual account examples are pretty-printed (2-space indent), one example per code block. Only the batch / JSON Lines example stays one object per line.
+   - **Never wrap or split lines in JSON Lines examples**, in any document. Each record is one unbroken line, however long; long lines scroll horizontally.
 2. Do **not** include a changelog section. Changes are tracked in git history.
 3. Output to `sirf-schema.md`.
 4. Tone should be readable for a semi-technical audience.
@@ -119,10 +122,12 @@ You support four workflows. Determine which one the user needs from their reques
 - **`recordCount` minimum:** 1. Empty files (zero account records) are not valid.
 - **Postcode format:** Internal space is **required**. `"NG8 1JD"` is valid; `"NG81JD"` is not.
 - **`repaymentPeriod`:** Total periods at origination, not remaining. Minimum value: 1.
-- **Identifier patterns:** `accountId` uses `^[A-Za-z0-9-]+$` (alphanumeric and hyphens, mixed case). `portfolioId` uses `^[a-z0-9-]+$` (lowercase only, kebab-case, institution-prefixed e.g. `farringdon-mortgages`).
+- **Identifier patterns:** `accountId` and `customerId` (optional, on `person`; the lender's own customer reference) use `^[A-Za-z0-9-]+$` (alphanumeric and hyphens, mixed case). `portfolioId` uses `^[a-z0-9-]+$` (lowercase only, kebab-case, institution-prefixed e.g. `farringdon-mortgages`).
 - **Date format:** ISO 8601, `YYYY-MM-DD`, zero-padded months and days. Non-zero-padded dates are non-conforming.
 - **Name minimum length:** `firstName` and `lastName` must each be at least 2 characters (`minLength: 2`).
 - **`accountSubtype`:** Optional on any account type. Not restricted to Mortgage.
+- **Account record structure:** Account records are `{ recordType, person, address, account }`. All account data fields sit inside the nested `account` object (`$defs/account`); the line-level definition is `$defs/accountRecord`.
+- **`account.portfolioId`:** Optional, same pattern as the Header `portfolioId`. Used only for single records sent by HTTP POST; omitted in JSON Lines files, where the Header supplies it. The schema can't tell the two apart (both use `$defs/accountRecord`), so the file-level validator checks it.
 - **Revolving credit fields:** `creditLimit`, `cashAdvances`, and `cashAdvancesCount` are only valid on `CreditCard`, `ChargeCard`, and `Budget` accounts. The schema enforces this via `if/then/else`: the `then` branch requires `creditLimit`; the `else` branch prohibits all three fields using `false` schemas.
 
 ## No Inference Rule
@@ -145,8 +150,10 @@ You support four workflows. Determine which one the user needs from their reques
 - `.claude/skills/credit-schema-designer/conventions.md` — sole source of truth for all SIRF business rules and constraints. Read at the start of every session.
 - `README.md` — top-level repo readme (MIT licence, links to all generated files). Regenerated alongside docs.
 - `LICENSE` — MIT licence text. Not regenerated; edit manually if copyright details change.
-- `schemas/sirf.schema.json` — JSON Schema (draft 2020-12) for all SIRF records. Header at `$defs/header`, account at `$defs/account`. Applied per-line to a SIRF JSON Lines file.
+- `schemas/sirf.schema.json` — JSON Schema (draft 2020-12) for all SIRF records. Header at `$defs/header`, account record at `$defs/accountRecord`, nested account object at `$defs/account`. Applied per-line to a SIRF JSON Lines file.
 - `sirf-schema.md` — format reference documentation (markdown). Regenerated after schema changes.
+- `sirf-delivery.md` — delivery guide: JSON Lines files for bulk reporting, single account records over HTTP POST for real-time reporting and individual corrections. Update after schema changes so its examples stay valid.
+- `sirf-validation.md` — guide to validating SIRF files with JSON Schema, with error examples and a Python validator. Update after schema changes so its rules, examples and output stay accurate.
 - `samples/sample-instance-mortgage.json` — pretty-printed Mortgage account record conforming to the current schema.
 - `samples/sample-instance-unsecured-loan.json` — pretty-printed UnsecuredLoan account record conforming to the current schema.
 - `samples/sample-instance-credit-card.json` — pretty-printed CreditCard account record (with `creditLimit`, `cashAdvances`, `cashAdvancesCount`) conforming to the current schema.

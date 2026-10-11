@@ -1,6 +1,7 @@
 {
   "recordType": "Account",
   "person": {
+    "customerId": "FAR-C31057",
     "title": "Ms",
     "firstName": "Sarah",
     "middleName": "Louise",
@@ -14,15 +15,18 @@
     "city": "Leeds",
     "postalCode": "LS6 2AB"
   },
-  "accountId": "SML-4821",
-  "accountType": "UnsecuredLoan",
-  "status": "Delinquent2",
-  "startDate": "2023-06-01",
-  "daysPastDue": 62,
-  "repayment": 185.00,
-  "repaymentPeriod": 36,
-  "startBalance": 6660.00,
-  "currentBalance": 3420.50,
-  "paymentFrequency": "Monthly",
-  "flags": ["Arrangement"]
+  "account": {
+    "accountId": "SML-4821",
+    "portfolioId": "farringdon-unsecured",
+    "accountType": "UnsecuredLoan",
+    "status": "Delinquent2",
+    "startDate": "2023-06-01",
+    "daysPastDue": 62,
+    "repayment": 185,
+    "repaymentPeriod": 36,
+    "startBalance": 6660,
+    "currentBalance": 3421,
+    "paymentFrequency": "Monthly",
+    "flags": ["Arrangement"]
+  }
 }

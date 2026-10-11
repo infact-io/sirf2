@@ -20,7 +20,7 @@ addFormats(ajv);
 ajv.addSchema(schema);
 
 const validateHeader = ajv.getSchema(`${schema.$id}#/$defs/header`);
-const validateAccount = ajv.getSchema(`${schema.$id}#/$defs/account`);
+const validateAccount = ajv.getSchema(`${schema.$id}#/$defs/accountRecord`);
 
 function colorizeJson(obj) {
   const json = JSON.stringify(obj, null, 2);

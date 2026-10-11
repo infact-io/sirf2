@@ -20,15 +20,14 @@ This reference captures the domain conventions for the Standard Industry Reporti
 
 ### Monetary Amounts
 
-- Represented as JSON numbers (not strings).
+- Represented as JSON integers in whole pounds (not strings, not decimals). Values are rounded to the nearest pound (e.g. £498.75 → `499`).
 - Currency is always GBP — no currency field is needed.
-- Precision: values should have at most 2 decimal places. The schema should not enforce this (JSON Schema lacks native decimal-place constraints), but the skill should note this as a convention when documenting schemas and flag it when validating instances.
-- Use `type: "number"` with `minimum: 0` where negative values are nonsensical (e.g. `currentBalance`, `repayment`).
+- Use `type: "integer"` with `minimum: 0` where negative values are nonsensical (e.g. `currentBalance`, `repayment`). The schema enforces whole numbers, so decimal values are schema errors.
 
 ### Identifiers
 
 - String type.
-- `accountId`: alphanumeric and hyphens, mixed case permitted. Pattern: `^[A-Za-z0-9-]+$`.
+- `accountId` and `customerId`: alphanumeric and hyphens, mixed case permitted. Pattern: `^[A-Za-z0-9-]+$`.
 - `portfolioId`: **lowercase only**, kebab-case. Must be prefixed with the reporting institution's slug, e.g. `farringdon-mortgages`, `farringdon-unsecured`. Pattern: `^[a-z0-9-]+$`. This naming convention provides collision-avoidance without a separate registry — the institution prefix makes each ID globally unambiguous. Consumers should treat `portfolioId` as unique within a reporter context; the institution prefix is a human-readable namespace, not a guarantee of global uniqueness in isolation.
 
 ### Enumerations
@@ -42,8 +41,9 @@ This reference captures the domain conventions for the Standard Industry Reporti
 
 ### Person
 
-- Fields: `title`, `firstName`, `middleName`, `lastName`, `suffix`, `dob`, `email`, `phone`.
-- `title`, `middleName`, `suffix`, `email`, and `phone` are optional.
+- Fields: `customerId`, `title`, `firstName`, `middleName`, `lastName`, `suffix`, `dob`, `email`, `phone`.
+- `customerId`, `title`, `middleName`, `suffix`, `email`, and `phone` are optional.
+- `customerId` — optional string. The lender's own identifier for the customer, the same across all of that customer's accounts with the lender. Same pattern as `accountId`: `^[A-Za-z0-9-]+$`.
 - `firstName`, `lastName`, `dob` are required.
 - `firstName` and `lastName` must each be at least 2 characters.
 - `title` enum values: to be confirmed, but likely `"Mr"`, `"Mrs"`, `"Ms"`, `"Miss"`, `"Mx"`, `"Dr"`.
@@ -77,21 +77,35 @@ The address uses a simplified flat structure. `line1` and `postalCode` are requi
 - `recordCount` — required, positive integer, total number of account records in the file excluding the header.
 - A `recordType` discriminator field is present on all records: `"Header"` for the header, `"Account"` for account records.
 
+### Delivery
+
+- **Bulk:** a JSON Lines file — Header record on line 1, then one or more Account records, one compact JSON object per line.
+- **Single record:** one Account record (no Header) sent as the body of an HTTP POST, for real-time reporting or for an individual correction. Validated against `$defs/accountRecord`. Carries `account.portfolioId`, since there is no Header to supply it.
+- `account.portfolioId` is not used in JSON Lines files.
+- Endpoint URL, authentication, and responses for HTTP POST are not yet defined.
+
+### Account Record Structure
+
+- Each account record has exactly four top-level fields: `recordType` (`"Account"`), `person`, `address`, and `account`. All four are required.
+- All account data fields listed below live inside the nested `account` object, never at the top level of the record.
+- Schema definitions: `$defs/accountRecord` validates the whole line; `$defs/account` validates the nested `account` object and carries the conditional rules.
+
 ### Account Data
 
 - `accountId` — required, string. Pattern: `^[A-Za-z0-9-]+$` (alphanumeric and hyphens, mixed case permitted).
+- `portfolioId` — optional, string. Same pattern as the Header `portfolioId`: `^[a-z0-9-]+$`. Used only when the account record is sent on its own by HTTP POST. Omit in JSON Lines files, where the Header `portfolioId` applies to every account.
 - `accountIdChange` — optional, string. Same pattern as `accountId`. Provided when the accountId for this account has changed; processors should replace the previous accountId with this value.
 - `accountType` — required, string enum. Values: `"HirePurchase"`, `"UnsecuredLoan"`, `"Mortgage"`, `"Budget"`, `"CreditCard"`, `"ChargeCard"`, `"CurrentAccount"`, `"BasicBankAccount"`.
 - `status` — required, string enum. Values: `"Unclassified"`, `"Dormant"`, `"UpToDate"`, `"Delinquent1"`, `"Delinquent2"`, `"Delinquent3"`, `"Delinquent4"`, `"Delinquent5"`, `"Delinquent6"`, `"Defaulted"`. Delinquent1–6 represent months in arrears.
-- `startDate` — required, date.
+- `startDate` — optional, date.
 - `closeDate` — optional, date. The date the account was closed. Omit if the account is still open.
 - `daysPastDue` — optional, non-negative integer. Required when status is `Delinquent1` through `Delinquent6`.
 - `accountSubtype` — optional, string enum. Values: `"Residential"`, `"BuyToLet"`, `"Flexible"`.
-- `repayment` — required, monetary amount.
-- `repaymentPeriod` — required, positive integer. Represents the **total** number of repayment periods at origination (not remaining).
+- `repayment` — optional, monetary amount.
+- `repaymentPeriod` — optional, positive integer. Represents the **total** number of repayment periods at origination (not remaining).
 - `startBalance` — optional, monetary amount. Balance at the time the account was opened.
-- `currentBalance` — required, monetary amount.
-- `paymentFrequency` — required, string enum. Values: `"Monthly"`, `"Weekly"`, `"Fortnightly"`, `"Quarterly"`, `"Annually"`, `"Irregular"`.
+- `currentBalance` — optional, monetary amount.
+- `paymentFrequency` — optional, string enum. Values: `"Monthly"`, `"Weekly"`, `"Fortnightly"`, `"Quarterly"`, `"Annually"`, `"Irregular"`.
 - `creditLimit` — required when `accountType` is `"CreditCard"`, `"ChargeCard"`, or `"Budget"`; omit for all other types. Monetary amount.
 - `cashAdvances` — optional, monetary amount. Applies to `"CreditCard"`, `"ChargeCard"`, and `"Budget"` accounts only.
 - `cashAdvancesCount` — optional, non-negative integer. Applies to `"CreditCard"`, `"ChargeCard"`, and `"Budget"` accounts only.
@@ -127,10 +141,12 @@ This file is the sole source of truth for all business rules and constraints in 
 
 Schema files live in `schemas/`, sample data files live in `samples/`, documentation lives at the project root.
 
-- `schemas/sirf.schema.json` — combined line schema (header at `$defs/header`, account at `$defs/account`)
+- `schemas/sirf.schema.json` — combined line schema (header at `$defs/header`, account record at `$defs/accountRecord`, nested account object at `$defs/account`)
 - `README.md` — top-level repo readme (MIT licence, links to all generated files)
 - `LICENSE` — MIT licence text
 - `sirf-schema.md` — format reference documentation (markdown)
+- `sirf-delivery.md` — delivery guide (JSON Lines files and single-record HTTP POST)
+- `sirf-validation.md` — guide to validating SIRF files with JSON Schema
 - `samples/sample-instance-mortgage.json` — Mortgage instance example
 - `samples/sample-instance-unsecured-loan.json` — UnsecuredLoan instance example
 - `samples/sample-instance-credit-card.json` — CreditCard instance example
@@ -145,5 +161,5 @@ Always write new schema files to `schemas/` and new sample files to `samples/`.
 - Portfolio IDs should follow the `{institution-slug}-{portfolio-slug}` lowercase kebab-case convention, e.g. `farringdon-mortgages`, `farringdon-unsecured`, `farringdon-credit-cards`.
 - Dates should span a realistic range (reporting periods of ~1 month, account start dates in the recent past).
 - Monetary values should be realistic for UK consumer credit (repayments £50-£500, balances £100-£10,000).
-- JSONL output: one complete JSON object per line, no trailing comma, no array wrapper.
+- JSONL output: one complete JSON object per line, no trailing comma, no array wrapper. Never wrap or split a record across lines, in files or in documentation examples.
 - Single instance output: one complete, pretty-printed JSON object.

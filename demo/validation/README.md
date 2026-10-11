@@ -34,7 +34,7 @@ node validate.js invalid-missing-required.json
 node validate.js invalid-conditional.json
 ```
 
-`invalid-missing-required.json` demonstrates required-field and format errors: missing `status` and `repayment`, a first name that is too short, a date of birth in the wrong format, and a postcode missing its internal space.
+`invalid-missing-required.json` demonstrates required-field and format errors: a missing `status`, a first name that is too short, a date of birth in the wrong format, and a postcode missing its internal space.
 
 `invalid-conditional.json` demonstrates conditional constraint errors: `creditLimit` is present on an `UnsecuredLoan` account (where it is prohibited), and `daysPastDue` is absent even though `status` is `Delinquent2` (where it is required).
 

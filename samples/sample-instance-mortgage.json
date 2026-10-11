@@ -1,6 +1,7 @@
 {
   "recordType": "Account",
   "person": {
+    "customerId": "FAR-C10482",
     "title": "Mrs",
     "firstName": "Patricia",
     "lastName": "Okafor",
@@ -14,14 +15,17 @@
     "city": "Bristol",
     "postalCode": "BS8 4CD"
   },
-  "accountId": "POK-7714",
-  "accountType": "Mortgage",
-  "accountSubtype": "Residential",
-  "status": "UpToDate",
-  "startDate": "2018-03-01",
-  "closeDate": "2025-03-01",
-  "repayment": 498.75,
-  "repaymentPeriod": 300,
-  "currentBalance": 87450.00,
-  "paymentFrequency": "Monthly"
+  "account": {
+    "accountId": "POK-7714",
+    "portfolioId": "farringdon-mortgages",
+    "accountType": "Mortgage",
+    "accountSubtype": "Residential",
+    "status": "UpToDate",
+    "startDate": "2018-03-01",
+    "closeDate": "2025-03-01",
+    "repayment": 499,
+    "repaymentPeriod": 300,
+    "currentBalance": 87450,
+    "paymentFrequency": "Monthly"
+  }
 }

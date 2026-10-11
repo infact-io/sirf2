@@ -1,11 +1,5 @@
 {
   "recordType": "Account",
-  "accountId": "DEMO-001",
-  "accountType": "UnsecuredLoan",
-  "startDate": "2024-01-15",
-  "repaymentPeriod": 24,
-  "currentBalance": 4500.00,
-  "paymentFrequency": "Monthly",
   "person": {
     "firstName": "J",
     "lastName": "Smith",
@@ -14,5 +8,13 @@
   "address": {
     "line1": "10 High Street",
     "postalCode": "EC1A1BB"
+  },
+  "account": {
+    "accountId": "DEMO-001",
+    "accountType": "UnsecuredLoan",
+    "startDate": "2024-01-15",
+    "repaymentPeriod": 24,
+    "currentBalance": 4500,
+    "paymentFrequency": "Monthly"
   }
 }

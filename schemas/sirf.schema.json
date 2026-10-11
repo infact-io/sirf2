@@ -5,7 +5,7 @@
   "description": "Validates a single line in a SIRF JSON Lines file. Each line must be either a Header record (line 1) or an Account record (lines 2+), distinguished by the recordType discriminator field.",
   "oneOf": [
     { "$ref": "#/$defs/header" },
-    { "$ref": "#/$defs/account" }
+    { "$ref": "#/$defs/accountRecord" }
   ],
   "examples": [
     {
@@ -19,6 +19,7 @@
     {
       "recordType": "Account",
       "person": {
+        "customerId": "FAR-C10482",
         "title": "Mrs",
         "firstName": "Patricia",
         "lastName": "Okafor",
@@ -32,19 +33,22 @@
         "city": "Bristol",
         "postalCode": "BS8 4CD"
       },
-      "accountId": "POK-7714",
-      "accountType": "Mortgage",
-      "accountSubtype": "Residential",
-      "status": "UpToDate",
-      "startDate": "2018-03-01",
-      "repayment": 498.75,
-      "repaymentPeriod": 300,
-      "currentBalance": 87450.00,
-      "paymentFrequency": "Monthly"
+      "account": {
+        "accountId": "POK-7714",
+        "accountType": "Mortgage",
+        "accountSubtype": "Residential",
+        "status": "UpToDate",
+        "startDate": "2018-03-01",
+        "repayment": 499,
+        "repaymentPeriod": 300,
+        "currentBalance": 87450,
+        "paymentFrequency": "Monthly"
+      }
     },
     {
       "recordType": "Account",
       "person": {
+        "customerId": "FAR-C20931",
         "title": "Mr",
         "firstName": "James",
         "lastName": "Thornton",
@@ -58,21 +62,25 @@
         "city": "Manchester",
         "postalCode": "M1 4BT"
       },
-      "accountId": "JTH-2293",
-      "accountType": "CreditCard",
-      "status": "UpToDate",
-      "startDate": "2021-09-15",
-      "repayment": 75.00,
-      "repaymentPeriod": 60,
-      "currentBalance": 1240.00,
-      "paymentFrequency": "Monthly",
-      "creditLimit": 5000.00,
-      "cashAdvances": 200.00,
-      "cashAdvancesCount": 2
+      "account": {
+        "accountId": "JTH-2293",
+        "accountType": "CreditCard",
+        "status": "UpToDate",
+        "startDate": "2021-09-15",
+        "repayment": 75,
+        "repaymentPeriod": 60,
+        "currentBalance": 1240,
+        "paymentFrequency": "Monthly",
+        "creditLimit": 5000,
+        "minimumPayment": 25,
+        "cashAdvances": 200,
+        "cashAdvancesCount": 2
+      }
     },
     {
       "recordType": "Account",
       "person": {
+        "customerId": "FAR-C31057",
         "title": "Ms",
         "firstName": "Sarah",
         "middleName": "Louise",
@@ -86,15 +94,18 @@
         "city": "Leeds",
         "postalCode": "LS6 2AB"
       },
-      "accountId": "SML-4821",
-      "accountType": "UnsecuredLoan",
-      "status": "Delinquent2",
-      "startDate": "2023-06-01",
-      "repayment": 185.00,
-      "repaymentPeriod": 36,
-      "currentBalance": 3420.50,
-      "paymentFrequency": "Monthly",
-      "flags": ["Arrangement"]
+      "account": {
+        "accountId": "SML-4821",
+        "accountType": "UnsecuredLoan",
+        "status": "Delinquent2",
+        "startDate": "2023-06-01",
+        "daysPastDue": 62,
+        "repayment": 185,
+        "repaymentPeriod": 36,
+        "currentBalance": 3421,
+        "paymentFrequency": "Monthly",
+        "flags": ["Arrangement"]
+      }
     }
   ],
   "$defs": {
@@ -158,15 +169,42 @@
         }
       }
     },
-    "account": {
+    "accountRecord": {
       "title": "Standard Industry Reporting Format — Account Record",
-      "description": "A single consumer credit account record in a SIRF JSON Lines file. Must be preceded by a Header record which carries the reporting period and portfolio context for all records in the file.",
+      "description": "A single consumer credit account record in a SIRF JSON Lines file. Must be preceded by a Header record which carries the reporting period and portfolio context for all records in the file. Groups the individual (person), their address, and the account data (account).",
       "type": "object",
       "additionalProperties": false,
       "required": [
         "recordType",
         "person",
         "address",
+        "account"
+      ],
+      "properties": {
+        "recordType": {
+          "title": "Record Type",
+          "description": "Discriminator field identifying this as an account data record.",
+          "type": "string",
+          "const": "Account",
+          "examples": ["Account"]
+        },
+        "person": {
+          "$ref": "#/$defs/person"
+        },
+        "address": {
+          "$ref": "#/$defs/address"
+        },
+        "account": {
+          "$ref": "#/$defs/account"
+        }
+      }
+    },
+    "account": {
+      "title": "Account",
+      "description": "The credit account being reported: identifiers, product type, status, balances, repayment terms, and flags.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
         "accountId",
         "accountType",
         "status"
@@ -211,25 +249,19 @@
         }
       ],
       "properties": {
-        "recordType": {
-          "title": "Record Type",
-          "description": "Discriminator field identifying this as an account data record.",
-          "type": "string",
-          "const": "Account",
-          "examples": ["Account"]
-        },
-        "person": {
-          "$ref": "#/$defs/person"
-        },
-        "address": {
-          "$ref": "#/$defs/address"
-        },
         "accountId": {
           "title": "Account ID",
           "description": "Unique identifier for the credit account within the lender's system. Alphanumeric characters and hyphens only.",
           "type": "string",
           "pattern": "^[A-Za-z0-9-]+$",
           "examples": ["SML-4821", "JTH-0093", "POK7714"]
+        },
+        "portfolioId": {
+          "title": "Portfolio ID",
+          "description": "Identifier for the lender portfolio the account belongs to. Used only when the account record is sent on its own by HTTP POST. Omit in JSON Lines files, where the portfolioId in the Header record applies to every account. Same format as the Header portfolioId: lowercase kebab-case, prefixed with the reporting institution's slug.",
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "examples": ["farringdon-mortgages", "farringdon-unsecured", "farringdon-credit-cards"]
         },
         "accountIdChange": {
           "title": "Account ID Change",
@@ -297,10 +329,10 @@
         },
         "repayment": {
           "title": "Repayment Amount",
-          "description": "Scheduled repayment amount per period in GBP. At most 2 decimal places by convention.",
-          "type": "number",
+          "description": "Scheduled repayment amount per period in GBP. Whole pounds, rounded to the nearest pound.",
+          "type": "integer",
           "minimum": 0,
-          "examples": [185.00, 498.75, 75.50]
+          "examples": [185, 499, 76]
         },
         "repaymentPeriod": {
           "title": "Repayment Period",
@@ -311,17 +343,17 @@
         },
         "startBalance": {
           "title": "Start Balance",
-          "description": "Total balance in GBP at the time the account was opened. At most 2 decimal places by convention.",
-          "type": "number",
+          "description": "Total balance in GBP at the time the account was opened. Whole pounds, rounded to the nearest pound.",
+          "type": "integer",
           "minimum": 0,
-          "examples": [6660.00, 15000.00, 250000.00]
+          "examples": [6660, 15000, 250000]
         },
         "currentBalance": {
           "title": "Current Balance",
-          "description": "Total outstanding balance in GBP at the point of reporting.",
-          "type": "number",
+          "description": "Total outstanding balance in GBP at the point of reporting. Whole pounds, rounded to the nearest pound.",
+          "type": "integer",
           "minimum": 0,
-          "examples": [3420.50, 87450.00, 0.00]
+          "examples": [3421, 87450, 0]
         },
         "paymentFrequency": {
           "title": "Payment Frequency",
@@ -350,17 +382,17 @@
         },
         "creditLimit": {
           "title": "Credit Limit",
-          "description": "Maximum credit available on the account in GBP. Required when accountType is 'CreditCard', 'ChargeCard', or 'Budget'; omit for all other account types. At most 2 decimal places by convention.",
-          "type": "number",
+          "description": "Maximum credit available on the account in GBP. Required when accountType is 'CreditCard', 'ChargeCard', or 'Budget'; omit for all other account types. Whole pounds, rounded to the nearest pound.",
+          "type": "integer",
           "minimum": 0,
-          "examples": [5000.00, 2500.00, 10000.00]
+          "examples": [5000, 2500, 10000]
         },
         "cashAdvances": {
           "title": "Cash Advances",
-          "description": "Total value of cash advances taken on the account in GBP. Applies to CreditCard, ChargeCard, and Budget accounts only. At most 2 decimal places by convention.",
-          "type": "number",
+          "description": "Total value of cash advances taken on the account in GBP. Applies to CreditCard, ChargeCard, and Budget accounts only. Whole pounds, rounded to the nearest pound.",
+          "type": "integer",
           "minimum": 0,
-          "examples": [250.00, 0.00, 500.00]
+          "examples": [250, 0, 500]
         },
         "cashAdvancesCount": {
           "title": "Cash Advances Count",
@@ -371,10 +403,10 @@
         },
         "minimumPayment": {
           "title": "Minimum Payment",
-          "description": "Minimum payment due in GBP. Required on CreditCard accounts. At most 2 decimal places by convention.",
-          "type": "number",
+          "description": "Minimum payment due in GBP. Required on CreditCard accounts. Whole pounds, rounded to the nearest pound.",
+          "type": "integer",
           "minimum": 0,
-          "examples": [25.00, 35.50, 100.00]
+          "examples": [25, 36, 100]
         },
         "flags": {
           "title": "Flags",
@@ -414,6 +446,7 @@
       ],
       "examples": [
         {
+          "customerId": "FAR-C31057",
           "title": "Ms",
           "firstName": "Sarah",
           "lastName": "Mitchell",
@@ -421,6 +454,13 @@
         }
       ],
       "properties": {
+        "customerId": {
+          "title": "Customer ID",
+          "description": "The lender's own identifier for the customer, the same across all of that customer's accounts with the lender. Optional. Alphanumeric characters and hyphens only.",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9-]+$",
+          "examples": ["FAR-C31057", "FAR-C10482"]
+        },
         "title": {
           "title": "Title",
           "description": "Honorific title. Optional.",
