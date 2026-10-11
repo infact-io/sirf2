@@ -4,7 +4,7 @@
       "Bash(mkdir -p samples schemas)",
       "Bash(mv sample-instance-credit-card.json sample-instance-mortgage.json sample-instance-unsecured-loan.json sample.jsonl samples/)",
       "Bash(mv cdf-header.schema.json cdf-record.schema.json schemas/)",
-      "Edit(/.claude/skills/credit-schema-designer/**)"
+      "Edit(/.claude/conventions.md)"
     ]
   }
 }

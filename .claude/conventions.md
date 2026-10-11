@@ -1,6 +1,6 @@
 # Standard Industry Reporting Format — Schema Conventions
 
-This reference captures the domain conventions for the Standard Industry Reporting Format (SIRF), an industry standard for consumer credit data reporting. The skill should enforce and apply these conventions when inferring schemas, validating instances, generating sample data, or producing documentation.
+This reference captures the domain conventions for the Standard Industry Reporting Format (SIRF), an industry standard for consumer credit data reporting. Apply these conventions when changing the schema, validating instances, generating sample data, or writing documentation.
 
 ## Field Naming
 
@@ -34,7 +34,7 @@ This reference captures the domain conventions for the Standard Industry Reporti
 
 - **String enums** using PascalCase values (e.g. `"UnsecuredLoan"`, `"UpToDate"`, `"Monthly"`).
 - Defined inline in the schema using `enum` arrays.
-- When the skill encounters a field that looks like it could be an enum (small set of known values, categorical), it should propose enum values and ask the user to confirm or extend the list.
+- When a new field looks like it could be an enum (small set of known values, categorical), propose enum values and ask the user to confirm or extend the list.
 - Flag `type` values use the same PascalCase string enum convention.
 
 ## Structural Conventions
@@ -74,7 +74,7 @@ The address uses a simplified flat structure. `line1` and `postalCode` are requi
 - Carried in a file-level Header record (first line of every JSONL file), not repeated on each account record.
 - Fields: `sirfVersion`, `reportingStartDate`, `reportingEndDate`, `portfolioId`, `recordCount`.
 - `sirfVersion` — required, string, locked to the format version this file conforms to. Current value: `"2.0"`.
-- `recordCount` — required, positive integer, total number of account records in the file excluding the header.
+- `recordCount` — required, positive integer (minimum 1), total number of account records in the file excluding the header. Empty files (zero account records) are not valid.
 - A `recordType` discriminator field is present on all records: `"Header"` for the header, `"Account"` for account records.
 
 ### Delivery
@@ -100,7 +100,7 @@ The address uses a simplified flat structure. `line1` and `postalCode` are requi
 - `startDate` — optional, date.
 - `closeDate` — optional, date. The date the account was closed. Omit if the account is still open.
 - `daysPastDue` — optional, non-negative integer. Required when status is `Delinquent1` through `Delinquent6`.
-- `accountSubtype` — optional, string enum. Values: `"Residential"`, `"BuyToLet"`, `"Flexible"`.
+- `accountSubtype` — optional, string enum, allowed on any account type (not restricted to Mortgage). Values: `"Residential"`, `"BuyToLet"`, `"Flexible"`.
 - `repayment` — optional, monetary amount.
 - `repaymentPeriod` — optional, positive integer. Represents the **total** number of repayment periods at origination (not remaining).
 - `startBalance` — optional, monetary amount. Balance at the time the account was opened.
@@ -143,20 +143,7 @@ This file is the sole source of truth for all business rules and constraints in 
 
 ## Project File Layout
 
-Schema files live in `schemas/`, sample data files live in `samples/`, documentation lives at the project root.
-
-- `schemas/sirf.schema.json` — combined line schema (header at `$defs/header`, account record at `$defs/accountRecord`, nested account object at `$defs/account`)
-- `README.md` — top-level repo readme (MIT licence, links to all generated files)
-- `LICENSE` — MIT licence text
-- `sirf-schema.md` — format reference documentation (markdown)
-- `sirf-delivery.md` — delivery guide (JSON Lines files and single-record HTTP POST)
-- `sirf-validation.md` — guide to validating SIRF files with JSON Schema
-- `samples/sample-instance-mortgage.json` — Mortgage instance example
-- `samples/sample-instance-unsecured-loan.json` — UnsecuredLoan instance example
-- `samples/sample-instance-credit-card.json` — CreditCard instance example
-- `samples/sample-batch.jsonl` — JSONL file (1 header + 5 accounts)
-
-Always write new schema files to `schemas/` and new sample files to `samples/`.
+Schema files live in `schemas/`, sample data files live in `samples/`, documentation lives at the project root. The full list of files and what each must contain is in `.claude/CLAUDE.md`.
 
 ## Sample Data Conventions
 
