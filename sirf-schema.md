@@ -98,7 +98,7 @@ The `account` object holds all account data. Validated against `schemas/sirf.sch
 | `accountSubtype` | string (enum) | Further classification within the account type. Values: `Residential`, `BuyToLet`, `Flexible`. |
 | `closeDate` | string (date) | Date the account was closed. Format: `YYYY-MM-DD`. Omit if the account is still open. |
 | `startBalance` | integer | Balance in GBP at the time the account was opened. Minimum: 0. |
-| `flags` | array of string (enum) | Special condition markers. Multiple flags may be applied simultaneously. Omit the field entirely if none apply. See [Flags](#flags). |
+| `flags` | array of objects | Special condition markers, each with an optional period. Multiple flags may be applied simultaneously, but each flag type at most once per account. Omit the field entirely if none apply. See [Flags](#flags). |
 
 ---
 
@@ -180,7 +180,22 @@ Delinquent1–6 represent months in arrears.
 
 ### Flags
 
-Multiple flags may be applied simultaneously. Omit the `flags` field entirely if none apply.
+Each entry in `flags` is an object identifying the condition and, optionally, the period it applies. Multiple flags may be applied simultaneously, but each flag type may appear at most once per account. Omit the `flags` field entirely if none apply.
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `type` | string (enum) | Yes | The condition. One of the values below. |
+| `startDate` | string (date) | No | Date the flag started to apply (inclusive). Format: `YYYY-MM-DD`. |
+| `endDate` | string (date) | No | Date the flag stopped applying (inclusive). Format: `YYYY-MM-DD`. Omit while the flag still applies. Must be after `startDate` when both are present. |
+
+```json
+"flags": [
+  { "type": "Arrangement", "startDate": "2024-11-01" },
+  { "type": "Queried", "startDate": "2024-09-02", "endDate": "2024-10-15" }
+]
+```
+
+#### Flag Types
 
 | Value | Description |
 | --- | --- |
@@ -315,7 +330,7 @@ A `CreditCard` account showing `creditLimit`, `minimumPayment`, `cashAdvances`, 
 
 ### Sample 3 — Unsecured Loan with delinquency fields and flags
 
-An `UnsecuredLoan` in arrears with `daysPastDue`, `startBalance`, and an `Arrangement` flag.
+An `UnsecuredLoan` in arrears with `daysPastDue`, `startBalance`, a current `Arrangement` flag, and a `Queried` flag that has ended.
 
 ```json
 {
@@ -346,7 +361,17 @@ An `UnsecuredLoan` in arrears with `daysPastDue`, `startBalance`, and an `Arrang
     "startBalance": 6660,
     "currentBalance": 3421,
     "paymentFrequency": "Monthly",
-    "flags": ["Arrangement"]
+    "flags": [
+      {
+        "type": "Arrangement",
+        "startDate": "2024-11-01"
+      },
+      {
+        "type": "Queried",
+        "startDate": "2024-09-02",
+        "endDate": "2024-10-15"
+      }
+    ]
   }
 }
 ```
@@ -359,7 +384,7 @@ A complete SIRF JSON Lines file — 1 header and 5 account records:
 {"recordType":"Header","sirfVersion":"2.0","reportingStartDate":"2025-02-01","reportingEndDate":"2025-02-28","portfolioId":"farringdon-mortgages","recordCount":5}
 {"recordType":"Account","person":{"customerId":"FAR-C10482","title":"Mrs","firstName":"Patricia","lastName":"Okafor","dob":"1968-07-30"},"address":{"buildingName":"Rose Cottage","buildingNumber":"8","line1":"Church Lane","line2":"Clifton","city":"Bristol","postalCode":"BS8 4CD"},"account":{"accountId":"POK-7714","accountType":"Mortgage","accountSubtype":"Residential","status":"UpToDate","startDate":"2018-03-01","closeDate":"2025-03-01","repayment":499,"repaymentPeriod":300,"currentBalance":87450,"paymentFrequency":"Monthly"}}
 {"recordType":"Account","person":{"customerId":"FAR-C20931","title":"Mr","firstName":"James","lastName":"Thornton","dob":"1979-11-14","email":"j.thornton@example.com","phone":"447700900142"},"address":{"buildingNumber":"42","line1":"Maple Street","city":"Manchester","postalCode":"M1 4BT"},"account":{"accountId":"JTH-2293","accountType":"CreditCard","status":"UpToDate","startDate":"2021-09-15","repayment":75,"repaymentPeriod":60,"currentBalance":1240,"paymentFrequency":"Monthly","creditLimit":5000,"minimumPayment":25,"cashAdvances":200,"cashAdvancesCount":2}}
-{"recordType":"Account","person":{"customerId":"FAR-C31057","title":"Ms","firstName":"Sarah","middleName":"Louise","lastName":"Mitchell","dob":"1985-03-22"},"address":{"buildingNumber":"14","line1":"Birchwood Avenue","line2":"Headingley","city":"Leeds","postalCode":"LS6 2AB"},"account":{"accountId":"SML-4821","accountType":"UnsecuredLoan","status":"Delinquent2","startDate":"2023-06-01","daysPastDue":62,"repayment":185,"repaymentPeriod":36,"startBalance":6660,"currentBalance":3421,"paymentFrequency":"Monthly","flags":["Arrangement"]}}
+{"recordType":"Account","person":{"customerId":"FAR-C31057","title":"Ms","firstName":"Sarah","middleName":"Louise","lastName":"Mitchell","dob":"1985-03-22"},"address":{"buildingNumber":"14","line1":"Birchwood Avenue","line2":"Headingley","city":"Leeds","postalCode":"LS6 2AB"},"account":{"accountId":"SML-4821","accountType":"UnsecuredLoan","status":"Delinquent2","startDate":"2023-06-01","daysPastDue":62,"repayment":185,"repaymentPeriod":36,"startBalance":6660,"currentBalance":3421,"paymentFrequency":"Monthly","flags":[{"type":"Arrangement","startDate":"2024-11-01"},{"type":"Queried","startDate":"2024-09-02","endDate":"2024-10-15"}]}}
 {"recordType":"Account","person":{"title":"Mr","firstName":"David","lastName":"Nkosi","dob":"1995-06-12"},"address":{"buildingNumber":"31","line1":"Wellington Street","city":"Sheffield","postalCode":"S1 4ER"},"account":{"accountId":"DNK-8856","accountType":"HirePurchase","status":"UpToDate","startDate":"2022-09-01","repayment":320,"repaymentPeriod":60,"currentBalance":12800,"paymentFrequency":"Monthly"}}
-{"recordType":"Account","person":{"customerId":"FAR-C48820","title":"Ms","firstName":"Eleanor","lastName":"Griffiths","dob":"1961-03-28"},"address":{"buildingName":"Willowbank House","buildingNumber":"5","line1":"Riverside Way","city":"Exeter","postalCode":"EX2 4AB"},"account":{"accountId":"EGR-1147","accountType":"Mortgage","accountSubtype":"BuyToLet","status":"Defaulted","startDate":"2015-06-01","closeDate":"2024-11-30","repayment":612,"repaymentPeriod":240,"currentBalance":0,"paymentFrequency":"Monthly","flags":["Partial"]}}
+{"recordType":"Account","person":{"customerId":"FAR-C48820","title":"Ms","firstName":"Eleanor","lastName":"Griffiths","dob":"1961-03-28"},"address":{"buildingName":"Willowbank House","buildingNumber":"5","line1":"Riverside Way","city":"Exeter","postalCode":"EX2 4AB"},"account":{"accountId":"EGR-1147","accountType":"Mortgage","accountSubtype":"BuyToLet","status":"Defaulted","startDate":"2015-06-01","closeDate":"2024-11-30","repayment":612,"repaymentPeriod":240,"currentBalance":0,"paymentFrequency":"Monthly","flags":[{"type":"Partial","startDate":"2024-11-30"}]}}
 ```

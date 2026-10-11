@@ -104,7 +104,17 @@
         "repaymentPeriod": 36,
         "currentBalance": 3421,
         "paymentFrequency": "Monthly",
-        "flags": ["Arrangement"]
+        "flags": [
+          {
+            "type": "Arrangement",
+            "startDate": "2024-11-01"
+          },
+          {
+            "type": "Queried",
+            "startDate": "2024-09-02",
+            "endDate": "2024-10-15"
+          }
+        ]
       }
     }
   ],
@@ -410,27 +420,64 @@
         },
         "flags": {
           "title": "Flags",
-          "description": "Optional markers indicating special conditions on the account. Multiple flags may be applied simultaneously. Omit the field entirely if no flags apply.",
+          "description": "Optional markers indicating special conditions on the account. Multiple flags may be applied simultaneously, but each flag type may appear at most once per account. Omit the field entirely if no flags apply.",
           "type": "array",
-          "items": {
-            "type": "string",
-            "enum": [
-              "Deceased",
-              "Partial",
-              "DebtAssigned",
-              "DebtSold",
-              "GoneAway",
-              "Recourse",
-              "VoluntaryTermination",
-              "Arrangement",
-              "DebtManagement",
-              "PaidThirdParty",
-              "Queried",
-              "TransientAssociation"
-            ]
-          },
+          "items": { "$ref": "#/$defs/flag" },
           "uniqueItems": true,
-          "examples": [["Arrangement"], ["DebtSold"], ["Arrangement", "Queried"]]
+          "examples": [
+            [{ "type": "Arrangement", "startDate": "2024-11-01" }],
+            [{ "type": "Partial", "startDate": "2024-11-30" }],
+            [{ "type": "Arrangement", "startDate": "2024-11-01" }, { "type": "Queried", "startDate": "2024-09-02", "endDate": "2024-10-15" }]
+          ]
+        }
+      }
+    },
+    "flag": {
+      "title": "Flag",
+      "description": "A marker indicating a special condition on the account, with the optional period during which it applies.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "examples": [
+        { "type": "Arrangement", "startDate": "2024-11-01" },
+        { "type": "Queried", "startDate": "2024-09-02", "endDate": "2024-10-15" }
+      ],
+      "properties": {
+        "type": {
+          "title": "Flag Type",
+          "description": "The special condition that applies to the account.",
+          "type": "string",
+          "enum": [
+            "Deceased",
+            "Partial",
+            "DebtAssigned",
+            "DebtSold",
+            "GoneAway",
+            "Recourse",
+            "VoluntaryTermination",
+            "Arrangement",
+            "DebtManagement",
+            "PaidThirdParty",
+            "Queried",
+            "TransientAssociation"
+          ],
+          "examples": ["Arrangement", "Queried", "Partial"]
+        },
+        "startDate": {
+          "title": "Flag Start Date",
+          "description": "Date the flag started to apply (inclusive), in YYYY-MM-DD format. Optional.",
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$",
+          "examples": ["2024-11-01", "2024-09-02"]
+        },
+        "endDate": {
+          "title": "Flag End Date",
+          "description": "Date the flag stopped applying (inclusive), in YYYY-MM-DD format. Optional. Omit while the flag still applies. When startDate is also present, endDate must be after startDate.",
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$",
+          "examples": ["2024-10-15"]
         }
       }
     },

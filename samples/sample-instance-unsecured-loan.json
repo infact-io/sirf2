@@ -27,6 +27,16 @@
     "startBalance": 6660,
     "currentBalance": 3421,
     "paymentFrequency": "Monthly",
-    "flags": ["Arrangement"]
+    "flags": [
+      {
+        "type": "Arrangement",
+        "startDate": "2024-11-01"
+      },
+      {
+        "type": "Queried",
+        "startDate": "2024-09-02",
+        "endDate": "2024-10-15"
+      }
+    ]
   }
 }

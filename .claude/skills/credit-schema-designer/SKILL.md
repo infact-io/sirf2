@@ -128,6 +128,7 @@ You support four workflows. Determine which one the user needs from their reques
 - **`accountSubtype`:** Optional on any account type. Not restricted to Mortgage.
 - **Account record structure:** Account records are `{ recordType, person, address, account }`. All account data fields sit inside the nested `account` object (`$defs/account`); the line-level definition is `$defs/accountRecord`.
 - **`account.portfolioId`:** Optional, same pattern as the Header `portfolioId`. Used only for single records sent by HTTP POST; omitted in JSON Lines files, where the Header supplies it. The schema can't tell the two apart (both use `$defs/accountRecord`), so the file-level validator checks it.
+- **Flags:** `flags` is an array of `$defs/flag` objects: `type` (required, enum), optional `startDate` and `endDate` (inclusive period the flag applies; `endDate` must be after `startDate` when both present — checked by the file validator). Each flag `type` at most once per account — enforced by the file validator, not the schema (`uniqueItems` only blocks exact duplicates).
 - **Revolving credit fields:** `creditLimit`, `cashAdvances`, and `cashAdvancesCount` are only valid on `CreditCard`, `ChargeCard`, and `Budget` accounts. The schema enforces this via `if/then/else`: the `then` branch requires `creditLimit`; the `else` branch prohibits all three fields using `false` schemas.
 
 ## No Inference Rule

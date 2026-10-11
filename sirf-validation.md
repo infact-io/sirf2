@@ -83,6 +83,8 @@ JSON Schema looks at one record at a time, so rules about **the file as a whole*
 
 - Line 1 must be the Header record, and every other line must be an Account record.
 - `recordCount` in the header must equal the number of account records in the file.
+- Each flag type may appear at most once in an account's `flags`. The schema blocks exact duplicate entries, but not the same `type` with different dates.
+- A flag's `endDate` must be after its `startDate` when both are present. JSON Schema can't compare two dates.
 - Account records in a file must not include `account.portfolioId`. That field is only for single records sent by HTTP POST; in a file, the header's `portfolioId` applies. See [Delivery](sirf-delivery.md).
 
 The example validator below includes these checks.
@@ -201,7 +203,7 @@ account: 'daysPastDue' is a required property
 
 ## Validating a File
 
-The example below validates a whole SIRF file: it checks line 1 against `$defs/header`, every other line against `$defs/accountRecord`, `recordCount` against the number of account records, and that no account record carries its own `portfolioId`. Run it from the root of this repository so that `schemas/sirf.schema.json` can be found.
+The example below validates a whole SIRF file: it checks line 1 against `$defs/header`, every other line against `$defs/accountRecord`, `recordCount` against the number of account records, that no flag type is repeated within an account, that each flag's `endDate` is after its `startDate`, and that no account record carries its own `portfolioId`. Run it from the root of this repository so that `schemas/sirf.schema.json` can be found.
 
 ### Python
 
@@ -263,6 +265,15 @@ def check_file(path):
                 # In a file, the header's portfolioId applies to every account.
                 if "portfolioId" in record.get("account", {}):
                     problems.append(f"line {line_no}: account.portfolioId: not used in JSON Lines files")
+                # Each flag type may appear at most once per account.
+                flags = record.get("account", {}).get("flags", [])
+                types = [f["type"] for f in flags if isinstance(f, dict) and "type" in f]
+                for t in sorted({t for t in types if types.count(t) > 1}):
+                    problems.append(f"line {line_no}: account.flags: {t} appears more than once")
+                # A flag's endDate must be after its startDate.
+                for i, f in enumerate(flags):
+                    if isinstance(f, dict) and "startDate" in f and "endDate" in f and f["endDate"] <= f["startDate"]:
+                        problems.append(f"line {line_no}: account.flags.{i}.endDate: must be after startDate")
     if accounts != expected:
         problems.append(f"recordCount is {expected} but file has {accounts} account records")
     return problems

@@ -35,7 +35,7 @@ This reference captures the domain conventions for the Standard Industry Reporti
 - **String enums** using PascalCase values (e.g. `"UnsecuredLoan"`, `"UpToDate"`, `"Monthly"`).
 - Defined inline in the schema using `enum` arrays.
 - When the skill encounters a field that looks like it could be an enum (small set of known values, categorical), it should propose enum values and ask the user to confirm or extend the list.
-- Flags/tag arrays use the same PascalCase string enum convention.
+- Flag `type` values use the same PascalCase string enum convention.
 
 ## Structural Conventions
 
@@ -110,7 +110,11 @@ The address uses a simplified flat structure. `line1` and `postalCode` are requi
 - `cashAdvances` — optional, monetary amount. Applies to `"CreditCard"`, `"ChargeCard"`, and `"Budget"` accounts only.
 - `cashAdvancesCount` — optional, non-negative integer. Applies to `"CreditCard"`, `"ChargeCard"`, and `"Budget"` accounts only.
 - `minimumPayment` — monetary amount. Required on `"CreditCard"`. Optional on `"ChargeCard"` and `"Budget"`. Prohibited on all other account types.
-- `flags` — optional, array of string enum. Values and descriptions:
+- `flags` — optional, array of flag objects. Each flag type may appear at most once per account (JSON Schema can't enforce uniqueness by `type`, so the file validator checks it). Each flag object has:
+  - `type` — required, string enum (values below).
+  - `startDate` — optional, date. Date the flag started to apply (inclusive).
+  - `endDate` — optional, date. Date the flag stopped applying (inclusive). Omit while the flag still applies. When both dates are present, `endDate` must be after `startDate` (strictly later; the same date is not allowed). JSON Schema can't compare dates, so the file validator checks it.
+- Flag `type` values and descriptions:
   - `"Deceased"` — Deceased
   - `"Partial"` — Partial Settlement
   - `"DebtAssigned"` — Debt Assigned (Non CRA member)
