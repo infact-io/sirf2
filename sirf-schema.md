@@ -91,7 +91,7 @@ The `account` object holds all account data. Validated against `schemas/sirf.sch
 | `startDate` | string (date) | Date the account was opened. Format: `YYYY-MM-DD`. |
 | `repayment` | integer | Scheduled repayment amount per period in GBP. Minimum: 0. |
 | `repaymentPeriod` | integer | Total repayment periods at origination. Minimum: 1. |
-| `currentBalance` | integer | Outstanding balance in GBP at the point of reporting. Minimum: 0. |
+| `currentBalance` | integer | Outstanding balance in GBP at the point of reporting. May be negative. |
 | `paymentFrequency` | string (enum) | How often scheduled repayments are made. See [Payment Frequencies](#payment-frequencies). |
 | `portfolioId` | string | Portfolio the account belongs to. Used only when the record is sent on its own by HTTP POST; omit in JSON Lines files, where the header's `portfolioId` applies. Pattern: `^[a-z0-9-]+$`. See [Delivery](sirf-delivery.md). |
 | `accountIdChange` | string | Updated account identifier, provided when the `accountId` for this account has changed. Processors should replace the previous `accountId` with this value. Pattern: `^[A-Za-z0-9-]+$`. |
@@ -222,7 +222,7 @@ All dates are strings in `YYYY-MM-DD` format with zero-padded months and days. N
 
 ### Monetary Amounts
 
-Monetary amounts are JSON integers in whole GBP pounds, rounded to the nearest pound (e.g. £498.75 is reported as `499`). Decimal values are invalid. Currency is always GBP — no currency field is needed.
+Monetary amounts are JSON integers in whole GBP pounds, rounded to the nearest pound (e.g. £498.75 is reported as `499`). Decimal values are invalid. Currency is always GBP — no currency field is needed. All monetary amounts have a minimum of 0, except `currentBalance`, which may be negative.
 
 ### Identifiers
 

@@ -360,10 +360,9 @@
         },
         "currentBalance": {
           "title": "Current Balance",
-          "description": "Total outstanding balance in GBP at the point of reporting. Whole pounds, rounded to the nearest pound.",
+          "description": "Total outstanding balance in GBP at the point of reporting. Whole pounds, rounded to the nearest pound. May be negative.",
           "type": "integer",
-          "minimum": 0,
-          "examples": [3421, 87450, 0]
+          "examples": [3421, 87450, 0, -120]
         },
         "paymentFrequency": {
           "title": "Payment Frequency",

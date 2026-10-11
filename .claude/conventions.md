@@ -22,7 +22,7 @@ This reference captures the domain conventions for the Standard Industry Reporti
 
 - Represented as JSON integers in whole pounds (not strings, not decimals). Values are rounded to the nearest pound (e.g. £498.75 → `499`).
 - Currency is always GBP — no currency field is needed.
-- Use `type: "integer"` with `minimum: 0` where negative values are nonsensical (e.g. `currentBalance`, `repayment`). The schema enforces whole numbers, so decimal values are schema errors.
+- Use `type: "integer"` with `minimum: 0` for all monetary amounts except `currentBalance`, which may be negative. The schema enforces whole numbers, so decimal values are schema errors.
 
 ### Identifiers
 
@@ -104,7 +104,7 @@ The address uses a simplified flat structure. `line1` and `postalCode` are requi
 - `repayment` — optional, monetary amount.
 - `repaymentPeriod` — optional, positive integer. Represents the **total** number of repayment periods at origination (not remaining).
 - `startBalance` — optional, monetary amount. Balance at the time the account was opened.
-- `currentBalance` — optional, monetary amount.
+- `currentBalance` — optional, monetary amount. May be negative (no minimum).
 - `paymentFrequency` — optional, string enum. Values: `"Monthly"`, `"Weekly"`, `"Fortnightly"`, `"Quarterly"`, `"Annually"`, `"Irregular"`.
 - `creditLimit` — required when `accountType` is `"CreditCard"`, `"ChargeCard"`, or `"Budget"`; omit for all other types. Monetary amount.
 - `cashAdvances` — optional, monetary amount. Applies to `"CreditCard"`, `"ChargeCard"`, and `"Budget"` accounts only.

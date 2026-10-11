@@ -50,7 +50,7 @@ The schema's root accepts either a header or an account (`oneOf`). That's conven
 | Allowed values | `enum`, `const` | `status` must be one of the listed statuses; `sirfVersion` must be `"2.0"`. |
 | Text formats | `pattern` | Postcodes need their internal space (`LS6 2AB`); `accountId` is letters, digits and hyphens. |
 | Dates | `format: "date"` plus `pattern` | Dates must be zero-padded `YYYY-MM-DD`. |
-| Minimum values | `minimum` | Balances and repayments can't be negative; `recordCount` is at least 1. |
+| Minimum values | `minimum` | Repayments, `startBalance` and card amounts can't be negative (`currentBalance` can); `recordCount` is at least 1. |
 | No unknown fields | `additionalProperties: false` | A misspelt or invented field such as `balance` is rejected, as is an account field placed outside the `account` object. |
 | Rules that depend on other fields | `if` / `then` / `else` | Card accounts need `creditLimit`; a delinquent account needs `daysPastDue`. |
 
