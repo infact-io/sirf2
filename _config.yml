@@ -1,0 +1,66 @@
+title: SIRF
+description: Standard Industry Reporting Format — an open JSON format for consumer credit data reporting.
+url: https://sirf2.org
+
+remote_theme: just-the-docs/just-the-docs@v0.12.0
+plugins:
+  - jekyll-remote-theme
+  - jekyll-redirect-from
+  - jekyll-seo-tag
+
+search_enabled: true
+heading_anchors: true
+enable_copy_code_button: true
+back_to_top: true
+back_to_top_text: "Back to top"
+
+aux_links:
+  "GitHub":
+    - "https://github.com/infact-io/sirf2"
+aux_links_new_tab: true
+
+footer_content: 'SIRF is an open source format. <a href="https://github.com/infact-io/sirf2">View it on GitHub</a>.'
+
+# Publish the rendered pages only, not the raw Markdown sources.
+optional_front_matter:
+  remove_originals: true
+readme_index:
+  remove_originals: true
+
+# Page titles, menu order and web addresses live here rather than in front
+# matter, so the Markdown files still read cleanly on GitHub. Redirects from
+# the old .html addresses are in redirects/.
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+  - scope:
+      path: "README.md"
+    values:
+      title: Home
+      nav_order: 1
+      permalink: /
+  - scope:
+      path: "sirf-schema.md"
+    values:
+      title: Format Reference
+      nav_order: 2
+      permalink: /format/
+  - scope:
+      path: "sirf-delivery.md"
+    values:
+      title: Delivery
+      nav_order: 3
+      permalink: /delivery/
+  - scope:
+      path: "sirf-validation.md"
+    values:
+      title: Validation
+      nav_order: 4
+      permalink: /validation/
+
+exclude:
+  - .claude/
+  - .vscode/
+  - LICENSE

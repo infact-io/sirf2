@@ -2,6 +2,8 @@
 
 This repo defines SIRF, a JSON Lines format for consumer credit data reporting: a JSON Schema (draft 2020-12), sample data, and documentation. It is published at https://sirf2.org by GitHub Pages from `main` (root folder). Every push to `main` updates the site.
 
+The site uses the Just the Docs theme. Web addresses: `README.md` → `/`, `sirf-schema.md` → `/format/`, `sirf-delivery.md` → `/delivery/`, `sirf-validation.md` → `/validation/` (the old `.html` addresses redirect via the pages in `redirects/`). Page titles, menu order and addresses are set in `_config.yml`, not in front matter, so don't add front matter to the Markdown files. A new documentation page needs its own entry under `defaults` in `_config.yml`. Links between pages stay as relative `.md` links; GitHub Pages rewrites them to the new addresses.
+
 ## Rules
 
 - **`.claude/conventions.md` is the only source of business rules.** Read it before any schema, sample or documentation change.
@@ -27,6 +29,8 @@ Keep all of these consistent with the schema. `/regen` regenerates the generated
 | `samples/sample-instance-unsecured-loan.json` | Single UnsecuredLoan account record, pretty-printed. Carries `account.portfolioId`. |
 | `samples/sample-instance-credit-card.json` | Single CreditCard account record (with `creditLimit`, `minimumPayment`, `cashAdvances`, `cashAdvancesCount`), pretty-printed. Carries `account.portfolioId`. |
 | `samples/sample-batch.jsonl` | 1 Header + 5 Account records, one compact JSON object per line. No `account.portfolioId`. |
+| `_config.yml` | GitHub Pages site settings: Just the Docs theme (`remote_theme`), search, GitHub link, footer, and each page's title, menu order and web address (in `defaults`). Not regenerated. |
+| `redirects/*.html` | Redirect pages from the old addresses (`/sirf-schema.html` and so on) to the new ones. Not regenerated. |
 | `CNAME` | `sirf2.org`, used by GitHub Pages. Don't remove it. |
 | `LICENSE` | MIT licence. Not regenerated. |
 
