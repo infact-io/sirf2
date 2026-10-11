@@ -110,14 +110,8 @@ You support four workflows. Determine which one the user needs from their reques
    - Date, monetary, identifier, and postcode conventions.
    - A short JSON Lines example showing header + 2-3 account records.
 2. Do **not** include a changelog section. Changes are tracked in git history.
-3. Output **two files** with **identical content** — the HTML is a rendered version of the markdown, not a separately authored document. Every section, field, example, and enum table must appear in both files without omission or addition:
-   - `sirf-schema.md` — markdown version.
-   - `sirf-schema.html` — self-contained HTML rendering of the same content, with embedded CSS and highlight.js (CDN, **no theme stylesheet**). Rules:
-     - Layout: dark sidebar nav (`#1a1a2e`), main content max-width ~900px, required/optional badges on field tables, convention callout blocks with left blue border.
-     - Syntax highlighting: VS Code Light+ colours applied via custom CSS only — `#0451a5` keys, `#a31515` strings, `#098658` numbers, `#0000ff` literals, `#000000` punctuation; white background.
-     - Code blocks: `overflow-x: auto` on `pre`, `white-space: pre` on `code` — long lines scroll horizontally, never wrap.
-     - JSONL examples: use `language-json` class — highlight.js does token-level highlighting and colours correctly across multiple objects on separate lines.
-     - Tone should be readable for a semi-technical audience.
+3. Output to `sirf-schema.md`.
+4. Tone should be readable for a semi-technical audience.
 
 ## Resolved Design Decisions
 
@@ -153,7 +147,6 @@ You support four workflows. Determine which one the user needs from their reques
 - `LICENSE` — MIT licence text. Not regenerated; edit manually if copyright details change.
 - `schemas/sirf.schema.json` — JSON Schema (draft 2020-12) for all SIRF records. Header at `$defs/header`, account at `$defs/account`. Applied per-line to a SIRF JSON Lines file.
 - `sirf-schema.md` — format reference documentation (markdown). Regenerated after schema changes.
-- `sirf-schema.html` — format reference documentation (self-contained HTML). Identical content to `sirf-schema.md`.
 - `samples/sample-instance-mortgage.json` — pretty-printed Mortgage account record conforming to the current schema.
 - `samples/sample-instance-unsecured-loan.json` — pretty-printed UnsecuredLoan account record conforming to the current schema.
 - `samples/sample-instance-credit-card.json` — pretty-printed CreditCard account record (with `creditLimit`, `cashAdvances`, `cashAdvancesCount`) conforming to the current schema.

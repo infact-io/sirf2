@@ -15,7 +15,6 @@ MIT licence — see [LICENSE](LICENSE) for details.
 | File | Description |
 | --- | --- |
 | [sirf-schema.md](sirf-schema.md) | Format reference — field tables, enum values, conventions |
-| [sirf-schema.html](sirf-schema.html) | Same content rendered as self-contained HTML |
 
 ## Samples
 

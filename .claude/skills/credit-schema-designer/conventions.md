@@ -131,7 +131,6 @@ Schema files live in `schemas/`, sample data files live in `samples/`, documenta
 - `README.md` — top-level repo readme (MIT licence, links to all generated files)
 - `LICENSE` — MIT licence text
 - `sirf-schema.md` — format reference documentation (markdown)
-- `sirf-schema.html` — format reference documentation (HTML)
 - `samples/sample-instance-mortgage.json` — Mortgage instance example
 - `samples/sample-instance-unsecured-loan.json` — UnsecuredLoan instance example
 - `samples/sample-instance-credit-card.json` — CreditCard instance example
