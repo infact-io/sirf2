@@ -2,8 +2,6 @@
 
 A JSON Lines format for consumer credit data reporting.
 
-MIT licence — see [LICENSE](LICENSE) for details.
-
 ## Documentation
 
 | File | Description |
@@ -26,3 +24,7 @@ MIT licence — see [LICENSE](LICENSE) for details.
 | [samples/sample-instance-mortgage.json](samples/sample-instance-mortgage.json) | Single Mortgage account record |
 | [samples/sample-instance-unsecured-loan.json](samples/sample-instance-unsecured-loan.json) | Single UnsecuredLoan account record |
 | [samples/sample-instance-credit-card.json](samples/sample-instance-credit-card.json) | Single CreditCard account record |
+
+---
+
+SIRF is an open source format. The source is on GitHub: [github.com/infact-io/sirf2](https://github.com/infact-io/sirf2).
