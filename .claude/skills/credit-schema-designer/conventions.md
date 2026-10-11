@@ -82,7 +82,7 @@ The address uses a simplified flat structure. `line1` and `postalCode` are requi
 - **Bulk:** a JSON Lines file — Header record on line 1, then one or more Account records, one compact JSON object per line.
 - **Single record:** one Account record (no Header) sent as the body of an HTTP POST, for real-time reporting or for an individual correction. Validated against `$defs/accountRecord`. Carries `account.portfolioId`, since there is no Header to supply it.
 - `account.portfolioId` is not used in JSON Lines files.
-- Endpoint URL, authentication, and responses for HTTP POST are not yet defined.
+- HTTP POST examples use the path `/report`. Host name, authentication, and responses are not yet defined.
 
 ### Account Record Structure
 

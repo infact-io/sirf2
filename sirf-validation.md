@@ -300,9 +300,3 @@ The exit code is `1`, so the script can be used to stop a submission pipeline wh
 - **Check dates with `format` enabled.** `jsonschema` doesn't check `format: "date"` unless you pass a `format_checker`, as the example does. SIRF also checks dates with a `pattern`, so the layout is always enforced, but only format checking rejects impossible dates such as `2025-02-30`.
 - **Use a validator that supports Draft 2020-12.** In `jsonschema`, that's `Draft202012Validator`.
 - **Pin the schema version you validate against.** Keep a copy of the schema alongside your code, or fetch it from `https://sirf2.org/schemas/sirf.schema.json` and store it, so a change to the published schema doesn't change your results unexpectedly.
-
----
-
-## Try It
-
-The [validation demo](demo/validation/README.md) in this repository is a ready-to-run Node.js validator with coloured output, plus two deliberately invalid files that show the errors above.

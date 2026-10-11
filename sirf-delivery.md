@@ -81,10 +81,12 @@ Because each record is self-contained JSON, the body can be pretty-printed or co
 
 A credit card account reported as soon as it changes. This is [samples/sample-instance-credit-card.json](samples/sample-instance-credit-card.json):
 
-```http
-POST /<receiver endpoint> HTTP/1.1
+```text
+POST /report
 Content-Type: application/json
+```
 
+```json
 {
   "recordType": "Account",
   "person": {
@@ -124,10 +126,12 @@ Content-Type: application/json
 
 Suppose the mortgage `POK-7714` was reported with the wrong current balance. The correction is the **complete** account record with the corrected value, identified by the same `accountId` and `portfolioId`:
 
-```http
-POST /<receiver endpoint> HTTP/1.1
+```text
+POST /report
 Content-Type: application/json
+```
 
+```json
 {
   "recordType": "Account",
   "person": {
@@ -164,7 +168,3 @@ Content-Type: application/json
 A correction is a whole record, not just the changed field: the schema requires `person`, `address` and the account's core fields on every record, so a partial update would fail validation.
 
 If the account's identifier itself has changed, send the record with the original `accountId` and the new identifier in `accountIdChange`. Processors replace the previous `accountId` with the `accountIdChange` value.
-
-### Not yet defined by SIRF
-
-SIRF currently defines the content of the request body only. The endpoint URL, authentication, and the response a receiver returns are not part of the standard, so `<receiver endpoint>` in the examples above is a placeholder.
