@@ -1,7 +1,7 @@
 ---
 name: credit-schema-designer
 description: >
-  Iterative JSON Schema design tool for the Common Data Format (CDF), an industry standard for consumer credit data reporting.
+  Iterative JSON Schema design tool for the Standard Industry Reporting Format (SIRF), an industry standard for consumer credit data reporting.
   Use this skill whenever the user mentions: JSON Schema for credit data,
   credit reporting schema, schema design, schema refinement, validating a credit data instance,
   generating sample credit data, sample JSONL, synthetic credit data, schema changelog,
@@ -16,7 +16,7 @@ description: >
 
 # Credit Schema Designer
 
-You are helping design and iterate on a JSON Schema (draft 2020-12) for the Common Data Format (CDF), an industry standard for consumer credit data reporting. CDF uses modern JSON-based structures suitable for bulk delivery via JSON Lines.
+You are helping design and iterate on a JSON Schema (draft 2020-12) for the Standard Industry Reporting Format (SIRF), an industry standard for consumer credit data reporting. SIRF uses modern JSON-based structures suitable for bulk delivery via JSON Lines.
 
 ## Before You Start
 
@@ -26,7 +26,7 @@ Read the conventions file at the start of every session:
 .claude/skills/credit-schema-designer/conventions.md
 ```
 
-**conventions.md** defines CDF field naming rules, date formats, monetary conventions, address structures, enum styles, and sample data guidelines. Everything you produce must conform to these conventions.
+**conventions.md** defines SIRF field naming rules, date formats, monetary conventions, address structures, enum styles, and sample data guidelines. Everything you produce must conform to these conventions.
 
 ## Core Workflows
 
@@ -111,8 +111,8 @@ You support four workflows. Determine which one the user needs from their reques
    - A short JSON Lines example showing header + 2-3 account records.
 2. Do **not** include a changelog section. Changes are tracked in git history.
 3. Output **two files** with **identical content** — the HTML is a rendered version of the markdown, not a separately authored document. Every section, field, example, and enum table must appear in both files without omission or addition:
-   - `cdf-schema.md` — markdown version.
-   - `cdf-schema.html` — self-contained HTML rendering of the same content, with embedded CSS and highlight.js (CDN, **no theme stylesheet**). Rules:
+   - `sirf-schema.md` — markdown version.
+   - `sirf-schema.html` — self-contained HTML rendering of the same content, with embedded CSS and highlight.js (CDN, **no theme stylesheet**). Rules:
      - Layout: dark sidebar nav (`#1a1a2e`), main content max-width ~900px, required/optional badges on field tables, convention callout blocks with left blue border.
      - Syntax highlighting: VS Code Light+ colours applied via custom CSS only — `#0451a5` keys, `#a31515` strings, `#098658` numbers, `#0000ff` literals, `#000000` punctuation; white background.
      - Code blocks: `overflow-x: auto` on `pre`, `white-space: pre` on `code` — long lines scroll horizontally, never wrap.
@@ -148,12 +148,12 @@ You support four workflows. Determine which one the user needs from their reques
 
 ## References
 
-- `.claude/skills/credit-schema-designer/conventions.md` — sole source of truth for all CDF business rules and constraints. Read at the start of every session.
+- `.claude/skills/credit-schema-designer/conventions.md` — sole source of truth for all SIRF business rules and constraints. Read at the start of every session.
 - `README.md` — top-level repo readme (MIT licence, links to all generated files). Regenerated alongside docs.
 - `LICENSE` — MIT licence text. Not regenerated; edit manually if copyright details change.
-- `schemas/cdf.schema.json` — JSON Schema (draft 2020-12) for all CDF records. Header at `$defs/header`, account at `$defs/account`. Applied per-line to a CDF JSON Lines file.
-- `cdf-schema.md` — format reference documentation (markdown). Regenerated after schema changes.
-- `cdf-schema.html` — format reference documentation (self-contained HTML). Identical content to `cdf-schema.md`.
+- `schemas/sirf.schema.json` — JSON Schema (draft 2020-12) for all SIRF records. Header at `$defs/header`, account at `$defs/account`. Applied per-line to a SIRF JSON Lines file.
+- `sirf-schema.md` — format reference documentation (markdown). Regenerated after schema changes.
+- `sirf-schema.html` — format reference documentation (self-contained HTML). Identical content to `sirf-schema.md`.
 - `samples/sample-instance-mortgage.json` — pretty-printed Mortgage account record conforming to the current schema.
 - `samples/sample-instance-unsecured-loan.json` — pretty-printed UnsecuredLoan account record conforming to the current schema.
 - `samples/sample-instance-credit-card.json` — pretty-printed CreditCard account record (with `creditLimit`, `cashAdvances`, `cashAdvancesCount`) conforming to the current schema.

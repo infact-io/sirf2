@@ -1,6 +1,6 @@
-# Common Data Format — Schema Conventions
+# Standard Industry Reporting Format — Schema Conventions
 
-This reference captures the domain conventions for the Common Data Format (CDF), an industry standard for consumer credit data reporting. The skill should enforce and apply these conventions when inferring schemas, validating instances, generating sample data, or producing documentation.
+This reference captures the domain conventions for the Standard Industry Reporting Format (SIRF), an industry standard for consumer credit data reporting. The skill should enforce and apply these conventions when inferring schemas, validating instances, generating sample data, or producing documentation.
 
 ## Field Naming
 
@@ -72,8 +72,8 @@ The address uses a simplified flat structure. `line1` and `postalCode` are requi
 ### Report Metadata
 
 - Carried in a file-level Header record (first line of every JSONL file), not repeated on each account record.
-- Fields: `cdfVersion`, `reportingStartDate`, `reportingEndDate`, `portfolioId`, `recordCount`.
-- `cdfVersion` — required, string, locked to the format version this file conforms to. Current value: `"1.0"`.
+- Fields: `sirfVersion`, `reportingStartDate`, `reportingEndDate`, `portfolioId`, `recordCount`.
+- `sirfVersion` — required, string, locked to the format version this file conforms to. Current value: `"2.0"`.
 - `recordCount` — required, positive integer, total number of account records in the file excluding the header.
 - A `recordType` discriminator field is present on all records: `"Header"` for the header, `"Account"` for account records.
 
@@ -112,7 +112,7 @@ The address uses a simplified flat structure. `line1` and `postalCode` are requi
 
 ## Source of Truth
 
-This file is the sole source of truth for all business rules and constraints in CDF. Schema field descriptions and documentation must only assert facts explicitly stated here or confirmed by the user. Never infer rules from domain knowledge, industry practice, or common sense — even when they seem obviously correct. If a constraint is not in this file, omit it and raise it as an open design question.
+This file is the sole source of truth for all business rules and constraints in SIRF. Schema field descriptions and documentation must only assert facts explicitly stated here or confirmed by the user. Never infer rules from domain knowledge, industry practice, or common sense — even when they seem obviously correct. If a constraint is not in this file, omit it and raise it as an open design question.
 
 ## JSON Schema Dialect
 
@@ -127,11 +127,11 @@ This file is the sole source of truth for all business rules and constraints in 
 
 Schema files live in `schemas/`, sample data files live in `samples/`, documentation lives at the project root.
 
-- `schemas/cdf.schema.json` — combined line schema (header at `$defs/header`, account at `$defs/account`)
+- `schemas/sirf.schema.json` — combined line schema (header at `$defs/header`, account at `$defs/account`)
 - `README.md` — top-level repo readme (MIT licence, links to all generated files)
 - `LICENSE` — MIT licence text
-- `cdf-schema.md` — format reference documentation (markdown)
-- `cdf-schema.html` — format reference documentation (HTML)
+- `sirf-schema.md` — format reference documentation (markdown)
+- `sirf-schema.html` — format reference documentation (HTML)
 - `samples/sample-instance-mortgage.json` — Mortgage instance example
 - `samples/sample-instance-unsecured-loan.json` — UnsecuredLoan instance example
 - `samples/sample-instance-credit-card.json` — CreditCard instance example

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cdf.group/schemas/cdf/v1/cdf.schema.json",
-  "title": "Common Data Format — Line Schema",
-  "description": "Validates a single line in a CDF JSON Lines file. Each line must be either a Header record (line 1) or an Account record (lines 2+), distinguished by the recordType discriminator field.",
+  "$id": "https://sirf2.org/schemas/sirf.schema.json",
+  "title": "Standard Industry Reporting Format — Line Schema",
+  "description": "Validates a single line in a SIRF JSON Lines file. Each line must be either a Header record (line 1) or an Account record (lines 2+), distinguished by the recordType discriminator field.",
   "oneOf": [
     { "$ref": "#/$defs/header" },
     { "$ref": "#/$defs/account" }
@@ -10,7 +10,7 @@
   "examples": [
     {
       "recordType": "Header",
-      "cdfVersion": "1.0",
+      "sirfVersion": "2.0",
       "reportingStartDate": "2025-02-01",
       "reportingEndDate": "2025-02-28",
       "portfolioId": "farringdon-mortgages",
@@ -99,13 +99,13 @@
   ],
   "$defs": {
     "header": {
-      "title": "Common Data Format — File Header",
-      "description": "The first record in a CDF JSON Lines file. Carries reporting period and portfolio metadata that applies to all subsequent account records in the file. Processors should read this record first, then apply its context to all following lines.",
+      "title": "Standard Industry Reporting Format — File Header",
+      "description": "The first record in a SIRF JSON Lines file. Carries reporting period and portfolio metadata that applies to all subsequent account records in the file. Processors should read this record first, then apply its context to all following lines.",
       "type": "object",
       "additionalProperties": false,
       "required": [
         "recordType",
-        "cdfVersion",
+        "sirfVersion",
         "reportingStartDate",
         "reportingEndDate",
         "portfolioId",
@@ -119,12 +119,12 @@
           "const": "Header",
           "examples": ["Header"]
         },
-        "cdfVersion": {
-          "title": "CDF Version",
-          "description": "Version of the Common Data Format this file conforms to.",
+        "sirfVersion": {
+          "title": "SIRF Version",
+          "description": "Version of the Standard Industry Reporting Format this file conforms to.",
           "type": "string",
-          "const": "1.0",
-          "examples": ["1.0"]
+          "const": "2.0",
+          "examples": ["2.0"]
         },
         "reportingStartDate": {
           "title": "Reporting Start Date",
@@ -159,8 +159,8 @@
       }
     },
     "account": {
-      "title": "Common Data Format — Account Record",
-      "description": "A single consumer credit account record in a CDF JSON Lines file. Must be preceded by a Header record which carries the reporting period and portfolio context for all records in the file.",
+      "title": "Standard Industry Reporting Format — Account Record",
+      "description": "A single consumer credit account record in a SIRF JSON Lines file. Must be preceded by a Header record which carries the reporting period and portfolio context for all records in the file.",
       "type": "object",
       "additionalProperties": false,
       "required": [

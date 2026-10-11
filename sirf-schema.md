@@ -1,12 +1,12 @@
-# Common Data Format (CDF) — Format Reference
+# Standard Industry Reporting Format (SIRF) — Format Reference
 
-CDF is a JSON Lines format for bulk consumer credit data reporting. Each file contains one header record followed by one or more account records, one JSON object per line, no array wrapper.
+SIRF is a JSON Lines format for bulk consumer credit data reporting. Each file contains one header record followed by one or more account records, one JSON object per line, no array wrapper.
 
 ---
 
 ## File Structure
 
-Every CDF file begins with a Header record on the first line. All subsequent lines are Account records. A `recordType` discriminator field is present on every record.
+Every SIRF file begins with a Header record on the first line. All subsequent lines are Account records. A `recordType` discriminator field is present on every record.
 
 ```text
 Line 1:  Header record   — format version, reporting period, and portfolio metadata
@@ -17,12 +17,12 @@ Line 2+: Account record  — one consumer credit account per line
 
 ## Header Record
 
-The first record in every CDF file. Validated against `schemas/cdf.schema.json` (`$defs/header`).
+The first record in every SIRF file. Validated against `schemas/sirf.schema.json` (`$defs/header`).
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `recordType` | const `"Header"` | Yes | Discriminator. Always `"Header"`. |
-| `cdfVersion` | const `"1.0"` | Yes | CDF format version this file conforms to. Always `"1.0"`. |
+| `sirfVersion` | const `"2.0"` | Yes | SIRF format version this file conforms to. Always `"2.0"`. |
 | `reportingStartDate` | string (date) | Yes | Start of the reporting period, inclusive. Format: `YYYY-MM-DD`. |
 | `reportingEndDate` | string (date) | Yes | End of the reporting period, inclusive. Format: `YYYY-MM-DD`. |
 | `portfolioId` | string | Yes | Portfolio identifier. Lowercase kebab-case, institution-prefixed. See [Identifiers](#identifiers). |
@@ -32,7 +32,7 @@ The first record in every CDF file. Validated against `schemas/cdf.schema.json` 
 
 ## Account Record
 
-Validated against `schemas/cdf.schema.json` (`$defs/account`).
+Validated against `schemas/sirf.schema.json` (`$defs/account`).
 
 ### Core Fields
 
@@ -230,10 +230,10 @@ An `UnsecuredLoan` in arrears with `daysPastDue`, `startBalance`, and an `Arrang
 
 ### Batch File
 
-A complete CDF JSON Lines file — 1 header and 5 account records:
+A complete SIRF JSON Lines file — 1 header and 5 account records:
 
 ```json
-{"recordType":"Header","cdfVersion":"1.0","reportingStartDate":"2025-02-01","reportingEndDate":"2025-02-28","portfolioId":"farringdon-mortgages","recordCount":5}
+{"recordType":"Header","sirfVersion":"2.0","reportingStartDate":"2025-02-01","reportingEndDate":"2025-02-28","portfolioId":"farringdon-mortgages","recordCount":5}
 {"recordType":"Account","person":{"title":"Mrs","firstName":"Patricia","lastName":"Okafor","dob":"1968-07-30"},"address":{"buildingName":"Rose Cottage","buildingNumber":"8","line1":"Church Lane","line2":"Clifton","city":"Bristol","postalCode":"BS8 4CD"},"accountId":"POK-7714","accountType":"Mortgage","accountSubtype":"Residential","status":"UpToDate","startDate":"2018-03-01","closeDate":"2025-03-01","repayment":498.75,"repaymentPeriod":300,"currentBalance":87450.00,"paymentFrequency":"Monthly"}
 {"recordType":"Account","person":{"title":"Mr","firstName":"James","lastName":"Thornton","dob":"1979-11-14","email":"j.thornton@example.com","phone":"447700900142"},"address":{"buildingNumber":"42","line1":"Maple Street","city":"Manchester","postalCode":"M1 4BT"},"accountId":"JTH-2293","accountType":"CreditCard","status":"UpToDate","startDate":"2021-09-15","repayment":75.00,"repaymentPeriod":60,"currentBalance":1240.00,"paymentFrequency":"Monthly","creditLimit":5000.00,"minimumPayment":24.80,"cashAdvances":200.00,"cashAdvancesCount":2}
 {"recordType":"Account","person":{"title":"Ms","firstName":"Sarah","middleName":"Louise","lastName":"Mitchell","dob":"1985-03-22"},"address":{"buildingNumber":"14","line1":"Birchwood Avenue","line2":"Headingley","city":"Leeds","postalCode":"LS6 2AB"},"accountId":"SML-4821","accountType":"UnsecuredLoan","status":"Delinquent2","startDate":"2023-06-01","daysPastDue":62,"repayment":185.00,"repaymentPeriod":36,"startBalance":6660.00,"currentBalance":3420.50,"paymentFrequency":"Monthly","flags":["Arrangement"]}

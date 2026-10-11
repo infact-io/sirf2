@@ -1,7 +1,7 @@
 {
-  "name": "cdf-validator-demo",
+  "name": "sirf-validator-demo",
   "version": "1.0.0",
-  "description": "Demo validator for the Common Data Format",
+  "description": "Demo validator for the Standard Industry Reporting Format",
   "private": true,
   "scripts": {
     "validate": "node validate.js"

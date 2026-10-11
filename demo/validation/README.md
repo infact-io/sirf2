@@ -1,6 +1,6 @@
-# CDF Validation Demo
+# SIRF Validation Demo
 
-Demonstrates that the [Common Data Format schema](../../schemas/cdf.schema.json) validates instance documents and reports violations clearly.
+Demonstrates that the [Standard Industry Reporting Format schema](../../schemas/sirf.schema.json) validates instance documents and reports violations clearly.
 
 Uses [AJV](https://ajv.js.org/) — the reference JSON Schema validator with full Draft 2020-12 support.
 

@@ -5,7 +5,7 @@ const addFormats = require('ajv-formats');
 const fs = require('fs');
 const path = require('path');
 
-const schemaPath = path.join(__dirname, '../../schemas/cdf.schema.json');
+const schemaPath = path.join(__dirname, '../../schemas/sirf.schema.json');
 
 let schema;
 try {

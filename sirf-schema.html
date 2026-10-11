@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Common Data Format (CDF) — Format Reference</title>
+  <title>Standard Industry Reporting Format (SIRF) — Format Reference</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -59,7 +59,7 @@
 <body>
 
 <nav id="sidebar">
-  <div class="sidebar-title">CDF Reference</div>
+  <div class="sidebar-title">SIRF Reference</div>
   <span class="nav-group-label">Structure</span>
   <a href="#file-structure">File Structure</a>
   <a href="#header-record">Header Record</a>
@@ -83,27 +83,27 @@
 </nav>
 
 <main>
-  <h1>Common Data Format (CDF) — Format Reference</h1>
-  <p>CDF is a JSON Lines format for bulk consumer credit data reporting. Each file contains one header record followed by one or more account records, one JSON object per line, no array wrapper.</p>
+  <h1>Standard Industry Reporting Format (SIRF) — Format Reference</h1>
+  <p>SIRF is a JSON Lines format for bulk consumer credit data reporting. Each file contains one header record followed by one or more account records, one JSON object per line, no array wrapper.</p>
 
   <hr>
 
   <h2 id="file-structure">File Structure</h2>
-  <p>Every CDF file begins with a Header record on the first line. All subsequent lines are Account records. A <code>recordType</code> discriminator field is present on every record.</p>
+  <p>Every SIRF file begins with a Header record on the first line. All subsequent lines are Account records. A <code>recordType</code> discriminator field is present on every record.</p>
   <pre><code>Line 1:  Header record   — format version, reporting period, and portfolio metadata
 Line 2+: Account record  — one consumer credit account per line</code></pre>
 
   <hr>
 
   <h2 id="header-record">Header Record</h2>
-  <p>The first record in every CDF file. Validated against <code>schemas/cdf.schema.json</code> (<code>$defs/header</code>).</p>
+  <p>The first record in every SIRF file. Validated against <code>schemas/sirf.schema.json</code> (<code>$defs/header</code>).</p>
   <table>
     <thead>
       <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
     </thead>
     <tbody>
       <tr><td><code>recordType</code></td><td>const <code>"Header"</code></td><td><span class="badge req">Required</span></td><td>Discriminator. Always <code>"Header"</code>.</td></tr>
-      <tr><td><code>cdfVersion</code></td><td>const <code>"1.0"</code></td><td><span class="badge req">Required</span></td><td>CDF format version this file conforms to. Always <code>"1.0"</code>.</td></tr>
+      <tr><td><code>sirfVersion</code></td><td>const <code>"2.0"</code></td><td><span class="badge req">Required</span></td><td>SIRF format version this file conforms to. Always <code>"2.0"</code>.</td></tr>
       <tr><td><code>reportingStartDate</code></td><td>string (date)</td><td><span class="badge req">Required</span></td><td>Start of the reporting period, inclusive. Format: <code>YYYY-MM-DD</code>.</td></tr>
       <tr><td><code>reportingEndDate</code></td><td>string (date)</td><td><span class="badge req">Required</span></td><td>End of the reporting period, inclusive. Format: <code>YYYY-MM-DD</code>.</td></tr>
       <tr><td><code>portfolioId</code></td><td>string</td><td><span class="badge req">Required</span></td><td>Portfolio identifier. Lowercase kebab-case, institution-prefixed. See <a href="#identifiers">Identifiers</a>.</td></tr>
@@ -114,7 +114,7 @@ Line 2+: Account record  — one consumer credit account per line</code></pre>
   <hr>
 
   <h2 id="account-record">Account Record</h2>
-  <p>Validated against <code>schemas/cdf.schema.json</code> (<code>$defs/account</code>).</p>
+  <p>Validated against <code>schemas/sirf.schema.json</code> (<code>$defs/account</code>).</p>
 
   <h3 id="core-fields">Core Fields</h3>
   <table>
@@ -404,8 +404,8 @@ Line 2+: Account record  — one consumer credit account per line</code></pre>
 }</code></pre>
 
   <h3>Batch File</h3>
-  <p>A complete CDF JSON Lines file — 1 header and 5 account records (one JSON object per line):</p>
-  <pre><code class="language-json">{"recordType":"Header","cdfVersion":"1.0","reportingStartDate":"2025-02-01","reportingEndDate":"2025-02-28","portfolioId":"farringdon-mortgages","recordCount":5}
+  <p>A complete SIRF JSON Lines file — 1 header and 5 account records (one JSON object per line):</p>
+  <pre><code class="language-json">{"recordType":"Header","sirfVersion":"2.0","reportingStartDate":"2025-02-01","reportingEndDate":"2025-02-28","portfolioId":"farringdon-mortgages","recordCount":5}
 {"recordType":"Account","person":{"title":"Mrs","firstName":"Patricia","lastName":"Okafor","dob":"1968-07-30"},"address":{"buildingName":"Rose Cottage","buildingNumber":"8","line1":"Church Lane","line2":"Clifton","city":"Bristol","postalCode":"BS8 4CD"},"accountId":"POK-7714","accountType":"Mortgage","accountSubtype":"Residential","status":"UpToDate","startDate":"2018-03-01","closeDate":"2025-03-01","repayment":498.75,"repaymentPeriod":300,"currentBalance":87450.00,"paymentFrequency":"Monthly"}
 {"recordType":"Account","person":{"title":"Mr","firstName":"James","lastName":"Thornton","dob":"1979-11-14","email":"j.thornton@example.com","phone":"447700900142"},"address":{"buildingNumber":"42","line1":"Maple Street","city":"Manchester","postalCode":"M1 4BT"},"accountId":"JTH-2293","accountType":"CreditCard","status":"UpToDate","startDate":"2021-09-15","repayment":75.00,"repaymentPeriod":60,"currentBalance":1240.00,"paymentFrequency":"Monthly","creditLimit":5000.00,"minimumPayment":24.80,"cashAdvances":200.00,"cashAdvancesCount":2}
 {"recordType":"Account","person":{"title":"Ms","firstName":"Sarah","middleName":"Louise","lastName":"Mitchell","dob":"1985-03-22"},"address":{"buildingNumber":"14","line1":"Birchwood Avenue","line2":"Headingley","city":"Leeds","postalCode":"LS6 2AB"},"accountId":"SML-4821","accountType":"UnsecuredLoan","status":"Delinquent2","startDate":"2023-06-01","daysPastDue":62,"repayment":185.00,"repaymentPeriod":36,"startBalance":6660.00,"currentBalance":3420.50,"paymentFrequency":"Monthly","flags":["Arrangement"]}
