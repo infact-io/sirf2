@@ -1,0 +1,5 @@
+// Just the Docs callouts only draw a coloured border and title; give the
+// "early" callout a yellow fill so it reads as a box.
+blockquote.early {
+  background-color: #fff8d6;
+}
