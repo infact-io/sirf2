@@ -1,4 +1,4 @@
-# Standard Industry Reporting Format (SIRF) — Format Reference
+# Standard Industry Reporting Format (SIRF) — Format
 
 SIRF is a JSON Lines format for bulk consumer credit data reporting. Each file contains one header record followed by one or more account records, one JSON object per line, no array wrapper.
 

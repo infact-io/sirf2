@@ -7,7 +7,7 @@ SIRF data can be delivered in two ways:
 | [JSON Lines file](#json-lines-files) | One Header record followed by many Account records | Bulk reporting of a whole portfolio for a reporting period |
 | [HTTP POST](#single-records-over-http) | One Account record | Real-time reporting of a single account, or an individual correction |
 
-Both methods use the same Account record. The one difference is `portfolioId`: in a file it comes from the Header record, while a record sent on its own carries it in its `account` object. For the fields themselves, see the [Format Reference](sirf-schema.md). For how to check records before sending them, see [Validation](sirf-validation.md).
+Both methods use the same Account record. The one difference is `portfolioId`: in a file it comes from the Header record, while a record sent on its own carries it in its `account` object. For the fields themselves, see the [Format](sirf-schema.md). For how to check records before sending them, see [Validation](sirf-validation.md).
 
 ---
 
@@ -45,7 +45,7 @@ Line 2+: Account record  — one consumer credit account per line
 - **Line 1 is always the Header record.** It carries `sirfVersion`, the reporting period (`reportingStartDate` and `reportingEndDate`), the `portfolioId`, and the `recordCount`. This context applies to every account record in the file.
 - **Every other line is an Account record.** Each one holds a single account: `recordType`, `person`, `address` and `account`. Account records in a file don't include `account.portfolioId`, because the header's `portfolioId` applies to them all.
 - **`recordCount` must equal the number of account records** in the file, not counting the header. It's at least 1, so a file always contains at least one account.
-- **Each record sits on a single line.** Records are written in compact form, with no line breaks inside a record and no array wrapper around the file. Pretty-printed records, like the examples in the Format Reference, are only for reading.
+- **Each record sits on a single line.** Records are written in compact form, with no line breaks inside a record and no array wrapper around the file. Pretty-printed records, like the examples in the [Format](sirf-schema.md) page, are only for reading.
 
 ### Example file
 

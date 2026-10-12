@@ -2,7 +2,7 @@
 
 SIRF publishes its rules as a [JSON Schema](https://json-schema.org/) so that lenders can check their files before submitting them, and receivers can check files as they arrive, both against exactly the same rules. This page explains how the SIRF schema works, what it does and doesn't check, and how to validate a SIRF file in Python.
 
-For the fields themselves, see the [Format Reference](sirf-schema.md).
+For the fields themselves, see the [Format](sirf-schema.md).
 
 ---
 
