@@ -13,7 +13,8 @@
     "line1": "Church Lane",
     "line2": "Clifton",
     "city": "Bristol",
-    "postalCode": "BS8 4CD"
+    "postalCode": "BS8 4CD",
+    "deliveryPoint": "55930043"
   },
   "account": {
     "accountId": "POK-7714",

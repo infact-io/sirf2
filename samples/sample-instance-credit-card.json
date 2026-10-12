@@ -13,7 +13,8 @@
     "buildingNumber": "9",
     "line1": "Fernside Close",
     "city": "Norwich",
-    "postalCode": "NR3 2HT"
+    "postalCode": "NR3 2HT",
+    "deliveryPoint": "61204875"
   },
   "account": {
     "accountId": "MBL-7722",

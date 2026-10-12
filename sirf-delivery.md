@@ -56,7 +56,7 @@ A complete SIRF file with a header and five account records. This is [samples/sa
 {"recordType":"Account","person":{"customerId":"FAR-C10482","title":"Mrs","firstName":"Patricia","lastName":"Okafor","dob":"1968-07-30"},"address":{"buildingName":"Rose Cottage","buildingNumber":"8","line1":"Church Lane","line2":"Clifton","city":"Bristol","postalCode":"BS8 4CD"},"account":{"accountId":"POK-7714","accountType":"Mortgage","accountSubtype":"Residential","status":"UpToDate","startDate":"2018-03-01","closeDate":"2025-03-01","repayment":499,"repaymentPeriod":300,"currentBalance":87450,"paymentFrequency":"Monthly"}}
 {"recordType":"Account","person":{"customerId":"FAR-C20931","title":"Mr","firstName":"James","lastName":"Thornton","dob":"1979-11-14","email":"j.thornton@example.com","phone":"447700900142"},"address":{"buildingNumber":"42","line1":"Maple Street","city":"Manchester","postalCode":"M1 4BT"},"account":{"accountId":"JTH-2293","accountType":"CreditCard","status":"UpToDate","startDate":"2021-09-15","repayment":75,"repaymentPeriod":60,"currentBalance":1240,"paymentFrequency":"Monthly","creditLimit":5000,"minimumPayment":25,"cashAdvances":200,"cashAdvancesCount":2}}
 {"recordType":"Account","person":{"customerId":"FAR-C31057","title":"Ms","firstName":"Sarah","middleName":"Louise","lastName":"Mitchell","dob":"1985-03-22"},"address":{"buildingNumber":"14","line1":"Birchwood Avenue","line2":"Headingley","city":"Leeds","postalCode":"LS6 2AB"},"account":{"accountId":"SML-4821","accountType":"UnsecuredLoan","status":"Delinquent2","startDate":"2023-06-01","daysPastDue":62,"repayment":185,"repaymentPeriod":36,"startBalance":6660,"currentBalance":3421,"paymentFrequency":"Monthly","flags":[{"type":"Arrangement","startDate":"2024-11-01"},{"type":"Queried","startDate":"2024-09-02","endDate":"2024-10-15"}]}}
-{"recordType":"Account","person":{"title":"Mr","firstName":"David","lastName":"Nkosi","dob":"1995-06-12"},"address":{"buildingNumber":"31","line1":"Wellington Street","city":"Sheffield","postalCode":"S1 4ER"},"account":{"accountId":"DNK-8856","accountType":"HirePurchase","status":"UpToDate","startDate":"2022-09-01","repayment":320,"repaymentPeriod":60,"currentBalance":12800,"paymentFrequency":"Monthly"}}
+{"recordType":"Account","person":{"title":"Mr","firstName":"David","lastName":"Nkosi","dob":"1995-06-12"},"address":{"buildingNumber":"31","line1":"Wellington Street","city":"Sheffield","postalCode":"S1 4ER","deliveryPoint":"30917264"},"account":{"accountId":"DNK-8856","accountType":"HirePurchase","status":"UpToDate","startDate":"2022-09-01","repayment":320,"repaymentPeriod":60,"currentBalance":12800,"paymentFrequency":"Monthly"}}
 {"recordType":"Account","person":{"customerId":"FAR-C48820","title":"Ms","firstName":"Eleanor","lastName":"Griffiths","dob":"1961-03-28"},"address":{"buildingName":"Willowbank House","buildingNumber":"5","line1":"Riverside Way","city":"Exeter","postalCode":"EX2 4AB"},"account":{"accountId":"EGR-1147","accountType":"Mortgage","accountSubtype":"BuyToLet","status":"Defaulted","startDate":"2015-06-01","closeDate":"2024-11-30","repayment":612,"repaymentPeriod":240,"currentBalance":0,"paymentFrequency":"Monthly","flags":[{"type":"Partial","startDate":"2024-11-30"}]}}
 ```
 
@@ -102,7 +102,8 @@ Content-Type: application/json
     "buildingNumber": "9",
     "line1": "Fernside Close",
     "city": "Norwich",
-    "postalCode": "NR3 2HT"
+    "postalCode": "NR3 2HT",
+    "deliveryPoint": "61204875"
   },
   "account": {
     "accountId": "MBL-7722",
@@ -147,7 +148,8 @@ Content-Type: application/json
     "line1": "Church Lane",
     "line2": "Clifton",
     "city": "Bristol",
-    "postalCode": "BS8 4CD"
+    "postalCode": "BS8 4CD",
+    "deliveryPoint": "55930043"
   },
   "account": {
     "accountId": "POK-7714",
