@@ -2,7 +2,7 @@
 
 A JSON Lines format for consumer credit data reporting.
 
-> This is an early draft proposal of the new format and its definition, focusing on the approach rather than the detail. There is a significant amount of development and change to come.
+> This is an early draft technical proposal of the new format and its definition, focusing on the approach rather than the detail. There is a significant amount of development and change to come.
 {: .early }
 
 ## Documentation

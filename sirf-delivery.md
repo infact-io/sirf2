@@ -169,5 +169,3 @@ Content-Type: application/json
 ```
 
 A correction is a whole record, not just the changed field: the schema requires `person`, `address` and the account's core fields on every record, so a partial update would fail validation.
-
-If the account's identifier itself has changed, send the record with the original `accountId` and the new identifier in `accountIdChange`. Processors replace the previous `accountId` with the `accountIdChange` value.
