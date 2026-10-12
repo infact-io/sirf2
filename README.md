@@ -9,7 +9,7 @@ A JSON Lines format for consumer credit data reporting.
 
 | File | Description |
 | --- | --- |
-| [sirf-schema.md](sirf-schema.md) | Format reference — field tables, enum values, conventions |
+| [sirf-schema.md](sirf-schema.md) | The format — field tables, enum values, conventions |
 | [sirf-delivery.md](sirf-delivery.md) | Delivering SIRF data — JSON Lines files for bulk reporting, single records over HTTP POST for real-time reporting and corrections |
 | [sirf-validation.md](sirf-validation.md) | Validating SIRF files with JSON Schema — what is checked, error examples, Python validator |
 
