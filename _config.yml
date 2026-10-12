@@ -24,7 +24,7 @@ aux_links:
     - "https://github.com/infact-io/sirf2"
 aux_links_new_tab: true
 
-footer_content: 'SIRF is an open source format. <a href="https://github.com/infact-io/sirf2">View it on GitHub</a>.'
+footer_content: 'SIRF is an open format. <a href="https://github.com/infact-io/sirf2">View it on GitHub</a>.'
 
 # Publish the rendered pages only, not the raw Markdown sources.
 optional_front_matter:

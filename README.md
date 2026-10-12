@@ -30,4 +30,4 @@ A JSON Lines format for consumer credit data reporting.
 
 ---
 
-SIRF is an open source format. The source is on GitHub: [github.com/infact-io/sirf2](https://github.com/infact-io/sirf2).
+SIRF is an open format. The source is on GitHub: [github.com/infact-io/sirf2](https://github.com/infact-io/sirf2).
