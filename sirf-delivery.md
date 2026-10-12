@@ -99,6 +99,7 @@ Content-Type: application/json
     "phone": "447911234567"
   },
   "address": {
+    "subBuilding": "Flat 3",
     "buildingNumber": "9",
     "line1": "Fernside Close",
     "city": "Norwich",
